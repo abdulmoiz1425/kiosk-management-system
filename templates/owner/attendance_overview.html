@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Overview — Wafaa Tech{% endblock %}
+
+{% block content %}
+<!-- Header + Month Nav -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center">
+    <a href="{% url 'owner:dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="fw-bold mb-0" style="color:var(--wt-dark);">
+      <i class="bi bi-person-check me-2"></i>Attendance — {{ month_label }}
+    </h4>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-chevron-left"></i> Prev
+    </a>
+    <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-outline-secondary">
+      Next <i class="bi bi-chevron-right"></i>
+    </a>
+  </div>
+</div>
+
+<div class="card card-wt">
+  <div class="card-body p-0">
+    {% if rows %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-wt">
+          <tr>
+            <th>Employee</th>
+            <th class="d-table-md-none">Kiosk</th>
+            <th>Present</th>
+            <th class="d-table-md-none">Full Days</th>
+            <th>Absent</th>
+            <th class="d-table-sm-none">Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>
+              <strong>{{ row.employee.get_full_name|default:row.employee.username }}</strong>
+              <div class="d-md-none text-muted small">{{ row.employee.kiosk.name|default:"—" }}</div>
+            </td>
+            <td class="text-muted d-table-md-none">{{ row.employee.kiosk.name|default:"—" }}</td>
+            <td>
+              <span class="badge bg-success">{{ row.present }}</span>
+            </td>
+            <td class="d-table-md-none">
+              <span class="badge bg-primary">{{ row.full_day }}</span>
+            </td>
+            <td>
+              <span class="badge {% if row.absent > 5 %}bg-danger{% elif row.absent > 2 %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                {{ row.absent }}
+              </span>
+            </td>
+            <td class="d-table-sm-none">
+              {% if row.present %}
+              {% widthratio row.present 30 100 as pct %}
+              <div class="progress" style="height:8px; min-width:80px;">
+                <div class="progress-bar" role="progressbar"
+                  style="width:{{ pct }}%; background-color:var(--wt-mint);"
+                  aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+              {% else %}
+              <span class="text-muted small">No data</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-5">No employees found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

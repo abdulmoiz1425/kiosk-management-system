@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Owner Dashboard — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-speedometer2 me-2"></i>Owner Dashboard
+    </h4>
+    <span class="text-muted small">{{ today|date:"l, d F Y" }}</span>
+</div>
+
+<!-- Stat Cards Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">—</div>
+                    <div class="stat-label">Total Kiosks</div>
+                </div>
+                <i class="bi bi-shop stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">—</div>
+                    <div class="stat-label">Checked In Today</div>
+                </div>
+                <i class="bi bi-person-check stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">—</div>
+                    <div class="stat-label">Today's Sales</div>
+                </div>
+                <i class="bi bi-cash-coin stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">—</div>
+                    <div class="stat-label">Today's Expenses</div>
+                </div>
+                <i class="bi bi-receipt stat-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kiosks Table placeholder -->
+<div class="card card-wt">
+    <div class="card-header">
+        <i class="bi bi-shop me-2"></i>Kiosks Status Today
+    </div>
+    <div class="card-body">
+        <p class="text-muted text-center py-4">
+            <i class="bi bi-hourglass-split fs-2 d-block mb-2"></i>
+            Kiosk data will appear here once employees start checking in.
+        </p>
+    </div>
+</div>
+{% endblock %}

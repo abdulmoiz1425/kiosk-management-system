@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Supervisor Visits — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center">
+    <a href="{% url 'owner:dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="fw-bold mb-0" style="color:var(--wt-dark);">
+      <i class="bi bi-clipboard-check me-2"></i>Supervisor Visit Logs
+    </h4>
+  </div>
+  <!-- Filter by kiosk -->
+  <form method="get" class="d-flex gap-2 align-items-center">
+    <select name="kiosk" class="form-select form-select-sm" style="min-width:160px;" onchange="this.form.submit()">
+      <option value="">All Kiosks</option>
+      {% for k in kiosks %}
+      <option value="{{ k.id }}" {% if selected_kiosk == k.id|stringformat:"s" %}selected{% endif %}>
+        {{ k.name }}
+      </option>
+      {% endfor %}
+    </select>
+    {% if selected_kiosk %}
+    <a href="{% url 'owner:visits' %}" class="btn btn-sm btn-outline-secondary">Clear</a>
+    {% endif %}
+  </form>
+</div>
+
+<div class="card card-wt">
+  <div class="card-body p-0">
+    {% if visits %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0 align-middle">
+        <thead class="table-wt">
+          <tr>
+            <th>Date</th>
+            <th>Supervisor</th>
+            <th class="d-table-sm-none">Kiosk</th>
+            <th>Rating</th>
+            <th class="d-table-md-none">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in visits %}
+          <tr>
+            <td>{{ v.date|date:"d M Y" }}</td>
+            <td>
+              <strong>{{ v.supervisor.get_full_name|default:v.supervisor.username }}</strong>
+              <div class="d-sm-none text-muted small">{{ v.kiosk.name }}</div>
+            </td>
+            <td class="d-table-sm-none">{{ v.kiosk.name }}</td>
+            <td>
+              <span class="fw-bold me-1" style="color:var(--wt-dark);">{{ v.rating }}/5</span>
+              {% for i in "12345" %}
+                <i class="bi bi-star{% if forloop.counter <= v.rating %}-fill text-warning{% endif %} small"></i>
+              {% endfor %}
+            </td>
+            <td class="text-muted d-table-md-none">{{ v.notes|truncatechars:70|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-5">
+      <i class="bi bi-map fs-2 d-block mb-2"></i>No visit records found.
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

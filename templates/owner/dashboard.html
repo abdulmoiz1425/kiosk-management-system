@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Owner Dashboard — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0" style="color:var(--wt-dark);">
+    <i class="bi bi-speedometer2 me-2"></i>Owner Dashboard
+  </h4>
+  <span class="text-muted small">{{ today|date:"l, d F Y" }}</span>
+</div>
+
+<!-- Top Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ total_kiosks }}</div>
+          <div class="stat-label">Active Kiosks</div>
+        </div>
+        <i class="bi bi-shop stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ checked_in_today }}/{{ total_employees }}</div>
+          <div class="stat-label">Checked In Today</div>
+        </div>
+        <i class="bi bi-person-check stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ total_sales_today }}</div>
+          <div class="stat-label">Today's Sales (SAR)</div>
+        </div>
+        <i class="bi bi-cash-coin stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ total_expenses_today }}</div>
+          <div class="stat-label">Today's Expenses (SAR)</div>
+        </div>
+        <i class="bi bi-receipt stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Nav -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <a href="{% url 'owner:attendance' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-person-check fs-3"></i><span>Attendance</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url 'owner:visits' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-clipboard-check fs-3"></i><span>Supervisor Visits</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url 'owner:reports' %}" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-file-earmark-bar-graph fs-3"></i><span>Monthly Reports</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/admin/" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-gear fs-3"></i><span>Admin Panel</span>
+    </a>
+  </div>
+</div>
+
+<!-- Kiosks Live Status -->
+<div class="card card-wt">
+  <div class="card-header">
+    <i class="bi bi-shop me-2"></i>All Kiosks — Live Status Today
+  </div>
+  <div class="card-body p-0">
+    {% if kiosk_rows %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0 align-middle">
+        <thead class="table-wt">
+          <tr>
+            <th>Kiosk</th>
+            <th class="d-table-md-none">Location</th>
+            <th>Attendance</th>
+            <th>Sales (SAR)</th>
+            <th class="d-table-md-none">Expenses (SAR)</th>
+            <th>Report</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in kiosk_rows %}
+          <tr>
+            <td><strong>{{ row.kiosk.name }}</strong></td>
+            <td class="text-muted d-table-md-none">{{ row.kiosk.location }}</td>
+            <td>
+              <span class="badge {% if row.checked_in > 0 %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                {{ row.checked_in }}/{{ row.emp_count }}
+              </span>
+            </td>
+            <td>
+              {% if row.sale %}
+                <span class="fw-semibold" style="color:var(--wt-dark);">{{ row.sale.total }}</span>
+                <br><small class="text-muted d-table-lg-none">Cash: {{ row.sale.cash_amount }} / Bank: {{ row.sale.bank_transfer_amount }}</small>
+              {% else %}
+                <span class="text-muted small">Not entered</span>
+              {% endif %}
+            </td>
+            <td class="d-table-md-none">
+              {% if row.expenses %}
+                <span class="text-danger fw-semibold">{{ row.expenses }}</span>
+              {% else %}
+                <span class="text-muted small">None</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if row.report_submitted %}
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i><span class="d-none d-md-inline">Submitted</span></span>
+              {% else %}
+                <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i><span class="d-none d-md-inline">Pending</span></span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'owner:kiosk_detail' row.kiosk.id %}" class="btn btn-sm btn-wt">
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-5">
+      <i class="bi bi-shop fs-2 d-block mb-2"></i>No active kiosks found.
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Log Visit — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'supervisor:dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-geo-alt me-2"></i>Log Kiosk Visit
+      </h4>
+    </div>
+
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-clipboard-plus me-2"></i>Visit Details
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Kiosk <span class="text-danger">*</span></label>
+            {{ form.kiosk }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Visit Date <span class="text-danger">*</span></label>
+            {{ form.date }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Rating <span class="text-danger">*</span></label>
+            {{ form.rating }}
+            <!-- Visual star preview -->
+            <div id="star-preview" class="mt-2 fs-4"></div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Notes</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6">
+            <i class="bi bi-check-circle me-2"></i>Save Visit
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function renderStars(n) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    html += `<i class="bi bi-star${i <= n ? '-fill text-warning' : ' text-muted'}"></i> `;
+  }
+  document.getElementById('star-preview').innerHTML = html;
+}
+const sel = document.getElementById('id_rating');
+sel.addEventListener('change', () => renderStars(parseInt(sel.value)));
+renderStars(parseInt(sel.value) || 3);
+</script>
+{% endblock %}
