@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Add Expense — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'dashboard:employee' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-receipt me-2"></i>Add Expense
+      </h4>
+    </div>
+
+    <div class="card card-wt mb-4">
+      <div class="card-header">
+        <i class="bi bi-plus-circle me-2"></i>New Expense
+      </div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Category</label>
+            {{ form.category }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Amount (SAR) <span class="text-danger">*</span></label>
+            {{ form.amount }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+            {{ form.description }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Receipt Photo</label>
+            {{ form.receipt_photo }}
+            <div class="form-text">Optional but recommended.</div>
+          </div>
+
+          <div id="preview-wrap" class="mb-3 d-none">
+            <img id="photo-preview" src="#" alt="Receipt Preview" class="img-fluid rounded" style="max-height:200px;">
+          </div>
+
+          <button type="submit" class="btn btn-wt-mint w-100 py-2 fs-6">
+            <i class="bi bi-plus-circle me-2"></i>Add Expense
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Today's expenses list -->
+    {% if today_expenses %}
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-list-ul me-2"></i>Today's Expenses
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for expense in today_expenses %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-secondary me-2">{{ expense.get_category_display }}</span>
+              {{ expense.description }}
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <strong style="color: var(--wt-dark);">{{ expense.amount }} SAR</strong>
+              <a href="{% url 'expenses:edit' expense.id %}" class="btn btn-sm btn-outline-secondary py-0 px-1">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'expenses:delete' expense.id %}" class="btn btn-sm btn-outline-danger py-0 px-1">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelector('input[type=file]').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('photo-preview').src = ev.target.result;
+      document.getElementById('preview-wrap').classList.remove('d-none');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+</script>
+{% endblock %}

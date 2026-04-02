@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Monthly Report — {{ month_label }} — Wafaa Tech{% endblock %}
+
+{% block content %}
+<!-- Header + Month Nav -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center">
+    <a href="{% url 'owner:dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="fw-bold mb-0" style="color:var(--wt-dark);">
+      <i class="bi bi-file-earmark-bar-graph me-2"></i>Monthly Report — {{ month_label }}
+    </h4>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-chevron-left"></i> Prev
+    </a>
+    <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-outline-secondary">
+      Next <i class="bi bi-chevron-right"></i>
+    </a>
+  </div>
+</div>
+
+<!-- Grand Totals -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ grand_sales }}</div>
+          <div class="stat-label">Total Sales (SAR)</div>
+        </div>
+        <i class="bi bi-cash-coin stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ grand_expenses }}</div>
+          <div class="stat-label">Total Expenses (SAR)</div>
+        </div>
+        <i class="bi bi-receipt stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value {% if grand_net < 0 %}text-danger{% endif %}">{{ grand_net }}</div>
+          <div class="stat-label">Net Revenue (SAR)</div>
+        </div>
+        <i class="bi bi-graph-up-arrow stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-fill mb-4" id="reportTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-financial">
+      <i class="bi bi-cash me-1"></i>Financials
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-attendance">
+      <i class="bi bi-person-check me-1"></i>Attendance
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-performance">
+      <i class="bi bi-star me-1"></i>Performance
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+  <!-- Financial Tab -->
+  <div class="tab-pane fade show active" id="tab-financial">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-wt">
+              <tr>
+                <th>Kiosk</th>
+                <th class="d-table-md-none">Location</th>
+                <th>Sales (SAR)</th>
+                <th class="d-table-sm-none">Expenses (SAR)</th>
+                <th>Net (SAR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in financial_rows %}
+              <tr>
+                <td>
+                  <a href="{% url 'owner:kiosk_detail' row.kiosk.id %}" style="color:var(--wt-dark); text-decoration:none;">
+                    <strong>{{ row.kiosk.name }}</strong>
+                  </a>
+                </td>
+                <td class="text-muted d-table-md-none">{{ row.kiosk.location }}</td>
+                <td class="text-success fw-semibold">{{ row.sales }}</td>
+                <td class="text-danger fw-semibold d-table-sm-none">{{ row.expenses }}</td>
+                <td>
+                  <span class="fw-bold {% if row.net < 0 %}text-danger{% else %}text-success{% endif %}">
+                    {{ row.net }}
+                  </span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" class="text-muted text-center py-4">No sales data.</td></tr>
+              {% endfor %}
+            </tbody>
+            <tfoot style="background:var(--wt-light);">
+              <tr>
+                <td><strong>Grand Total</strong></td>
+                <td class="d-table-md-none"></td>
+                <td class="text-success fw-bold">{{ grand_sales }}</td>
+                <td class="text-danger fw-bold d-table-sm-none">{{ grand_expenses }}</td>
+                <td class="fw-bold {% if grand_net < 0 %}text-danger{% else %}text-success{% endif %}">{{ grand_net }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Tab -->
+  <div class="tab-pane fade" id="tab-attendance">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-wt">
+              <tr>
+                <th>Employee</th>
+                <th class="d-table-md-none">Kiosk</th>
+                <th>Joining Date</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Attendance %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in attendance_rows %}
+              <tr>
+                <td>
+                  <strong>{{ row.employee.get_full_name|default:row.employee.username }}</strong>
+                  <div class="d-md-none text-muted small">{{ row.employee.kiosk.name|default:"—" }}</div>
+                </td>
+                <td class="text-muted d-table-md-none">{{ row.employee.kiosk.name|default:"—" }}</td>
+                <td class="text-muted small">{{ row.employee.date_joined|date:"d M Y" }}</td>
+                <td><span class="badge bg-success">{{ row.present }}</span></td>
+                <td>
+                  <span class="badge {% if row.absent > 5 %}bg-danger{% elif row.absent > 2 %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ row.absent }}
+                  </span>
+                </td>
+                <td>
+                  <span class="fw-semibold {% if row.attendance_pct >= 80 %}text-success{% elif row.attendance_pct >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                    {{ row.attendance_pct }}%
+                  </span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-muted text-center py-4">No attendance data.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Tab -->
+  <div class="tab-pane fade" id="tab-performance">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-wt">
+              <tr>
+                <th>Kiosk</th>
+                <th class="d-table-md-none">Location</th>
+                <th>Visits</th>
+                <th>Avg. Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in perf_rows %}
+              <tr>
+                <td>
+                  <a href="{% url 'owner:kiosk_detail' row.kiosk.id %}" style="color:var(--wt-dark); text-decoration:none;">
+                    <strong>{{ row.kiosk.name }}</strong>
+                  </a>
+                </td>
+                <td class="text-muted d-table-md-none">{{ row.kiosk.location }}</td>
+                <td>
+                  <span class="badge bg-primary">{{ row.visit_count }} visit{{ row.visit_count|pluralize }}</span>
+                </td>
+                <td>
+                  {% if row.avg_rating %}
+                    {% for i in "12345" %}
+                      <i class="bi bi-star{% if forloop.counter <= row.avg_rating %}-fill text-warning{% endif %}"></i>
+                    {% endfor %}
+                    <span class="small text-muted ms-1">{{ row.avg_rating }}/5</span>
+                  {% else %}
+                    <span class="text-muted">No visits</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-muted text-center py-4">No performance data.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

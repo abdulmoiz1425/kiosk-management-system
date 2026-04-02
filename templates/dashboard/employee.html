@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+    <i class="bi bi-house me-2"></i>Welcome, {{ request.user.get_full_name|default:request.user.username }}
+  </h4>
+  <span class="text-muted small">{{ today|date:"l, d F Y" }}</span>
+</div>
+
+{% if request.user.kiosk %}
+<div class="alert mb-4" style="background-color: var(--wt-light); border-left: 4px solid var(--wt-mint);">
+  <i class="bi bi-shop me-2" style="color: var(--wt-dark);"></i>
+  <strong>{{ request.user.kiosk.name }}</strong> — {{ request.user.kiosk.location }}
+</div>
+{% else %}
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle me-2"></i>You are not assigned to a kiosk. Contact your supervisor.
+</div>
+{% endif %}
+
+<!-- Quick Action Buttons -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    {% if attendance and attendance.check_in_time %}
+      <div class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-1 opacity-75">
+        <i class="bi bi-check-circle-fill fs-3"></i>
+        <span>Checked In</span>
+        <small>{{ attendance.check_in_time|time:"H:i" }}</small>
+      </div>
+    {% else %}
+      <a href="{% url 'attendance:checkin' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+        <i class="bi bi-box-arrow-in-right fs-3"></i>
+        <span>Check In</span>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="col-6 col-md-3">
+    {% if attendance and attendance.check_out_time %}
+      <div class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-1 opacity-75">
+        <i class="bi bi-check-circle-fill fs-3"></i>
+        <span>Checked Out</span>
+        <small>{{ attendance.check_out_time|time:"H:i" }}</small>
+      </div>
+    {% elif attendance and attendance.check_in_time %}
+      <a href="{% url 'attendance:checkout' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+        <i class="bi bi-box-arrow-right fs-3"></i>
+        <span>Check Out</span>
+      </a>
+    {% else %}
+      <div class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2 opacity-50" style="cursor:default;">
+        <i class="bi bi-box-arrow-right fs-3"></i>
+        <span>Check Out</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="col-6 col-md-3">
+    <a href="{% url 'sales:add' %}" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-cash fs-3"></i>
+      <span>{% if sale %}Update {% endif %}Sales</span>
+    </a>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <a href="{% url 'expenses:add' %}" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-receipt fs-3"></i>
+      <span>Add Expense</span>
+    </a>
+  </div>
+</div>
+
+<!-- Submit Report Button -->
+<div class="mb-4">
+  {% if report %}
+  <div class="btn btn-secondary w-100 py-2 opacity-75">
+    <i class="bi bi-check-circle-fill me-2"></i>Daily Report Submitted
+  </div>
+  {% else %}
+  <a href="{% url 'reports:submit' %}" class="btn btn-wt w-100 py-2">
+    <i class="bi bi-file-earmark-arrow-up me-2"></i>Submit Daily Report
+  </a>
+  {% endif %}
+</div>
+
+<!-- Today's Summary -->
+<div class="card card-wt">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-calendar-day me-2"></i>Today's Summary</span>
+    <a href="{% url 'dashboard:history' %}" class="btn btn-sm btn-outline-light">
+      <i class="bi bi-clock-history me-1"></i>History
+    </a>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+
+      <!-- Attendance -->
+      <div class="col-6 col-md-3">
+        <div class="text-center p-3 rounded" style="background: var(--wt-light);">
+          <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
+            {% if attendance and attendance.check_in_time %}
+              {{ attendance.check_in_time|time:"H:i" }}
+            {% else %}—{% endif %}
+          </div>
+          <div class="text-muted small">Check-in</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="text-center p-3 rounded" style="background: var(--wt-light);">
+          <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
+            {% if attendance and attendance.check_out_time %}
+              {{ attendance.check_out_time|time:"H:i" }}
+            {% else %}—{% endif %}
+          </div>
+          <div class="text-muted small">Check-out</div>
+        </div>
+      </div>
+
+      <!-- Sales -->
+      <div class="col-6 col-md-3">
+        <div class="text-center p-3 rounded" style="background: var(--wt-light);">
+          <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
+            {% if sale %}{{ sale.total }} SAR{% else %}—{% endif %}
+          </div>
+          <div class="text-muted small">Total Sales</div>
+        </div>
+      </div>
+
+      <!-- Expenses -->
+      <div class="col-6 col-md-3">
+        <div class="text-center p-3 rounded" style="background: var(--wt-light);">
+          <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
+            {% if total_expenses %}{{ total_expenses }} SAR{% else %}—{% endif %}
+          </div>
+          <div class="text-muted small">Expenses ({{ expenses|length }})</div>
+        </div>
+      </div>
+
+    </div>
+
+    {% if not attendance and not sale and not expenses %}
+    <p class="text-muted text-center py-3 mb-0">
+      <i class="bi bi-sunrise fs-2 d-block mb-2"></i>
+      No activity recorded yet today. Start by checking in!
+    </p>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

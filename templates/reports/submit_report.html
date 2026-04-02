@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Daily Report — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'dashboard:employee' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-file-earmark-text me-2"></i>Daily Report — {{ today }}
+      </h4>
+    </div>
+
+    <!-- Today's Sales & Expense Summary -->
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        <div class="card card-wt h-100">
+          <div class="card-header">
+            <i class="bi bi-cash-stack me-1"></i>Today's Sales
+          </div>
+          <div class="card-body">
+            {% if sale %}
+              <div class="mb-1"><span class="text-muted small">Cash:</span> <strong>{{ sale.cash_amount }} SAR</strong></div>
+              <div class="mb-1"><span class="text-muted small">Bank:</span> <strong>{{ sale.bank_transfer_amount }} SAR</strong></div>
+              <div class="border-top pt-2 mt-2"><span class="text-muted small">Total:</span> <strong style="color:var(--wt-dark);">{{ sale.total }} SAR</strong></div>
+            {% else %}
+              <p class="text-muted small mb-0">No sales recorded yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card card-wt h-100">
+          <div class="card-header">
+            <i class="bi bi-receipt me-1"></i>Today's Expenses
+          </div>
+          <div class="card-body">
+            {% if today_expenses %}
+              {% for exp in today_expenses %}
+                <div class="mb-1 d-flex justify-content-between">
+                  <span class="text-muted small">{{ exp.get_category_display }}</span>
+                  <strong class="small">{{ exp.amount }} SAR</strong>
+                </div>
+              {% endfor %}
+              <div class="border-top pt-2 mt-2"><span class="text-muted small">Total:</span> <strong style="color:var(--wt-dark);">{{ total_expenses }} SAR</strong></div>
+            {% else %}
+              <p class="text-muted small mb-0">No expenses recorded yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Form -->
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-camera me-2"></i>End of Day Report
+      </div>
+      <div class="card-body p-4">
+        <div class="alert" style="background-color: var(--wt-light); border-left: 4px solid var(--wt-mint);">
+          <i class="bi bi-info-circle me-2" style="color: var(--wt-dark);"></i>
+          Upload the opening and closing photos of the kiosk for today.
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Opening Photo -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Opening Photo <span class="text-danger">*</span></label>
+            {{ form.opening_photo }}
+            {% if form.opening_photo.errors %}
+              <div class="text-danger small mt-1">{{ form.opening_photo.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div id="opening-preview-wrap" class="mb-3 d-none">
+            <img id="opening-preview" src="#" alt="Opening Photo Preview" class="img-fluid rounded" style="max-height:200px;">
+          </div>
+
+          <!-- Closing Photo -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Closing Photo <span class="text-danger">*</span></label>
+            {{ form.closing_photo }}
+            {% if form.closing_photo.errors %}
+              <div class="text-danger small mt-1">{{ form.closing_photo.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div id="closing-preview-wrap" class="mb-3 d-none">
+            <img id="closing-preview" src="#" alt="Closing Photo Preview" class="img-fluid rounded" style="max-height:200px;">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Notes</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6">
+            <i class="bi bi-send me-2"></i>Submit Daily Report
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function bindPreview(inputId, previewId, wrapId) {
+  document.getElementById(inputId).addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById(previewId).src = ev.target.result;
+        document.getElementById(wrapId).classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+bindPreview('id_opening_photo', 'opening-preview', 'opening-preview-wrap');
+bindPreview('id_closing_photo', 'closing-preview', 'closing-preview-wrap');
+</script>
+{% endblock %}

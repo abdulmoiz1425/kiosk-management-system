@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Bonus / Penalty — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+  <a href="{% url 'supervisor:dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+    <i class="bi bi-cash-coin me-2"></i>Bonus / Penalty
+  </h4>
+</div>
+
+<div class="row g-4">
+
+  <!-- Form -->
+  <div class="col-12 col-md-5">
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-plus-circle me-2"></i>{% if edit %}Edit Record{% else %}Issue Bonus or Penalty{% endif %}
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Employee <span class="text-danger">*</span></label>
+            {{ form.employee }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Type <span class="text-danger">*</span></label>
+            {{ form.type }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Amount (SAR) <span class="text-danger">*</span></label>
+            {{ form.amount }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+            {{ form.date }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Reason <span class="text-danger">*</span></label>
+            {{ form.reason }}
+          </div>
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6" id="submit-btn">
+            <i class="bi bi-check-circle me-2"></i>Issue
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent list -->
+  <div class="col-12 col-md-7">
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-clock-history me-2"></i>Recent Issued
+      </div>
+      <div class="card-body p-0">
+        {% if recent %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Employee</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Reason</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bp in recent %}
+              <tr>
+                <td>{{ bp.date|date:"d M Y" }}</td>
+                <td>{{ bp.employee.get_full_name|default:bp.employee.username }}</td>
+                <td>
+                  {% if bp.type == 'bonus' %}
+                    <span class="badge bg-success">Bonus</span>
+                  {% else %}
+                    <span class="badge bg-danger">Penalty</span>
+                  {% endif %}
+                </td>
+                <td><strong>{{ bp.amount }} SAR</strong></td>
+                <td class="text-muted">{{ bp.reason|truncatechars:40 }}</td>
+                <td class="d-flex gap-1">
+                  <a href="{% url 'supervisor:edit_bonus_penalty' bp.id %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{% url 'supervisor:delete_bonus_penalty' bp.id %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No records yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Change button color based on type selection
+const typeSelect = document.getElementById('id_type');
+const btn = document.getElementById('submit-btn');
+function updateBtn() {
+  if (typeSelect.value === 'bonus') {
+    btn.className = 'btn btn-wt-mint w-100 py-2 fs-6';
+    btn.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Issue Bonus';
+  } else {
+    btn.className = 'btn btn-danger w-100 py-2 fs-6';
+    btn.innerHTML = '<i class="bi bi-dash-circle me-2"></i>Issue Penalty';
+  }
+}
+typeSelect.addEventListener('change', updateBtn);
+updateBtn();
+</script>
+{% endblock %}

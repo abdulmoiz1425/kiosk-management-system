@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Edit Expense — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'expenses:add' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-pencil me-2"></i>Edit Expense
+      </h4>
+    </div>
+
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-receipt me-2"></i>{{ expense.get_category_display }} — {{ expense.date }}
+      </div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Category</label>
+            {{ form.category }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Amount (SAR) <span class="text-danger">*</span></label>
+            {{ form.amount }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+            {{ form.description }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Receipt Photo</label>
+            {{ form.receipt_photo }}
+          </div>
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6">
+            <i class="bi bi-check-circle me-2"></i>Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

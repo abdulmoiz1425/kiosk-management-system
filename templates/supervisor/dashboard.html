@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Supervisor Dashboard — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+    <i class="bi bi-clipboard-check me-2"></i>Supervisor Dashboard
+  </h4>
+  <span class="text-muted small">{{ today|date:"l, d F Y" }}</span>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ visits_count }}</div>
+          <div class="stat-label">Visits This Month</div>
+        </div>
+        <i class="bi bi-geo-alt stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{% if avg_rating %}{{ avg_rating }}/5{% else %}—{% endif %}</div>
+          <div class="stat-label">Avg. Rating Given</div>
+        </div>
+        <i class="bi bi-star stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ bp_count }}</div>
+          <div class="stat-label">Bonus/Penalty Issued</div>
+        </div>
+        <i class="bi bi-cash-coin stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <a href="{% url 'supervisor:log_visit' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-plus-circle fs-3"></i>
+      <span>Log Visit</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url 'supervisor:visits' %}" class="btn btn-wt w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-list-check fs-3"></i>
+      <span>All Visits</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url 'supervisor:bonus_penalty' %}" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-cash-coin fs-3"></i>
+      <span>Bonus / Penalty</span>
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{% url 'supervisor:performance' %}" class="btn btn-wt-mint w-100 py-3 d-flex flex-column align-items-center gap-2">
+      <i class="bi bi-bar-chart-line fs-3"></i>
+      <span>Performance</span>
+    </a>
+  </div>
+</div>
+
+<!-- Kiosks Status Today -->
+<div class="card card-wt mb-4">
+  <div class="card-header">
+    <i class="bi bi-shop me-2"></i>My Assigned Kiosks — Status Today
+  </div>
+  <div class="card-body p-0">
+    {% if kiosk_status %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-wt">
+          <tr>
+            <th>Kiosk</th>
+            <th class="d-table-md-none">Location</th>
+            <th>Checked In</th>
+            <th class="d-table-sm-none">Today's Sales</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ks in kiosk_status %}
+          <tr>
+            <td>
+              <strong>{{ ks.kiosk.name }}</strong>
+              <div class="d-md-none text-muted small">{{ ks.kiosk.location }}</div>
+            </td>
+            <td class="text-muted d-table-md-none">{{ ks.kiosk.location }}</td>
+            <td>
+              <span class="badge {% if ks.checked_in > 0 %}bg-success{% else %}bg-secondary{% endif %}">
+                {{ ks.checked_in }}/{{ ks.total_employees }}
+              </span>
+            </td>
+            <td class="d-table-sm-none">
+              {% if ks.sale %}
+                <span class="fw-semibold" style="color:var(--wt-dark);">{{ ks.sale.total }} SAR</span>
+              {% else %}
+                <span class="text-muted">No entry</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'supervisor:log_visit' %}?kiosk={{ ks.kiosk.id }}" class="btn btn-sm btn-wt">
+                <i class="bi bi-plus"></i><span class="d-none d-md-inline"> Log Visit</span>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-4">No active kiosks found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Recent Visits -->
+<div class="card card-wt">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-clock-history me-2"></i>Recent Visits</span>
+    <a href="{% url 'supervisor:visits' %}" class="btn btn-sm btn-outline-light">View All</a>
+  </div>
+  <div class="card-body p-0">
+    {% if recent_visits %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-wt">
+          <tr>
+            <th>Date</th>
+            <th>Kiosk</th>
+            <th>Rating</th>
+            <th class="d-table-md-none">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in recent_visits %}
+          <tr>
+            <td>{{ v.date|date:"d M Y" }}</td>
+            <td>{{ v.kiosk.name }}</td>
+            <td>
+              {% for i in "12345" %}
+                <i class="bi bi-star{% if forloop.counter <= v.rating %}-fill text-warning{% endif %}"></i>
+              {% endfor %}
+            </td>
+            <td class="text-muted d-table-md-none">{{ v.notes|truncatechars:50|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-4">No visits logged yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

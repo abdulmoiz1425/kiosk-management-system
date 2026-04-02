@@ -1,0 +1,22 @@
+{
+  "name": "Wafaa Tech Kiosk Management",
+  "short_name": "Wafaa Tech",
+  "description": "Kiosk Management System by Wafaa Tech",
+  "start_url": "/dashboard/",
+  "display": "standalone",
+  "background_color": "#093423",
+  "theme_color": "#093423",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/img/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

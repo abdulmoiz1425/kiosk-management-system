@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Kiosk — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% if kiosk %}{% url 'owner:kiosk_detail' kiosk.id %}{% else %}{% url 'owner:kiosks_list' %}{% endif %}"
+         class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-shop me-2"></i>{{ action }} Kiosk
+      </h4>
+    </div>
+
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-pencil me-2"></i>Kiosk Details
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Location <span class="text-danger">*</span></label>
+            {{ form.location }}
+            {% if form.location.errors %}<div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Address</label>
+            {{ form.address }}
+          </div>
+
+          <div class="mb-4 form-check">
+            {{ form.is_active }}
+            <label class="form-check-label fw-semibold ms-2">Active</label>
+          </div>
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6">
+            <i class="bi bi-check-circle me-2"></i>{{ action }} Kiosk
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

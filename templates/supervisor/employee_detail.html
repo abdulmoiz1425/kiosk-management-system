@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% block title %}{{ employee.get_full_name }} — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+  <a href="{% url 'supervisor:performance' %}" class="btn btn-sm btn-outline-secondary me-3">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <div>
+    <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+      <i class="bi bi-person-lines-fill me-2"></i>{{ employee.get_full_name|default:employee.username }}
+    </h4>
+    <small class="text-muted">{{ employee.kiosk.name|default:"No kiosk assigned" }} &nbsp;|&nbsp; {{ employee.phone|default:"No phone" }}</small>
+  </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-fill mb-4" id="empTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-att">
+      <i class="bi bi-person-check me-1"></i>Attendance
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sales">
+      <i class="bi bi-cash me-1"></i>Sales
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-exp">
+      <i class="bi bi-receipt me-1"></i>Expenses
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-bp">
+      <i class="bi bi-cash-coin me-1"></i>Bonus / Penalty
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-reports">
+      <i class="bi bi-file-earmark-text me-1"></i>Reports
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+  <!-- Attendance -->
+  <div class="tab-pane fade show active" id="tab-att">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if attendances %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Check-in</th>
+                <th>Check-in Photo</th>
+                <th>Check-out</th>
+                <th>Check-out Photo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in attendances %}
+              <tr>
+                <td>{{ a.date|date:"d M Y" }}</td>
+                <td>{% if a.check_in_time %}{{ a.check_in_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>
+                  {% if a.check_in_photo %}
+                    <a href="{{ MEDIA_URL }}{{ a.check_in_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ a.check_in_photo }}" alt="Check-in" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>{% if a.check_out_time %}{{ a.check_out_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>
+                  {% if a.check_out_photo %}
+                    <a href="{{ MEDIA_URL }}{{ a.check_out_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ a.check_out_photo }}" alt="Check-out" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>
+                  {% if a.check_in_time and a.check_out_time %}
+                    <span class="badge bg-success">Complete</span>
+                  {% elif a.check_in_time %}
+                    <span class="badge bg-warning text-dark">Checked In</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Absent</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No attendance records.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales -->
+  <div class="tab-pane fade" id="tab-sales">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if sales %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th class="d-table-sm-none">Cash</th>
+                <th class="d-table-sm-none">Bank Transfer</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in sales %}
+              <tr>
+                <td>{{ s.date|date:"d M Y" }}</td>
+                <td class="d-table-sm-none">{{ s.cash_amount }} SAR</td>
+                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} SAR</td>
+                <td><strong>{{ s.total }} SAR</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No sales records.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses -->
+  <div class="tab-pane fade" id="tab-exp">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if expenses %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr>
+            </thead>
+            <tbody>
+              {% for e in expenses %}
+              <tr>
+                <td>{{ e.date|date:"d M Y" }}</td>
+                <td><span class="badge bg-secondary">{{ e.get_category_display }}</span></td>
+                <td>{{ e.description }}</td>
+                <td><strong>{{ e.amount }} SAR</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No expense records.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Bonus / Penalty -->
+  <div class="tab-pane fade" id="tab-bp">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if bonus_penalties %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th class="d-table-sm-none">Reason</th>
+                <th class="d-table-md-none">Issued By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bp in bonus_penalties %}
+              <tr>
+                <td>{{ bp.date|date:"d M Y" }}</td>
+                <td>
+                  {% if bp.type == 'bonus' %}
+                    <span class="badge bg-success">Bonus</span>
+                  {% else %}
+                    <span class="badge bg-danger">Penalty</span>
+                  {% endif %}
+                </td>
+                <td><strong>{{ bp.amount }} SAR</strong></td>
+                <td class="text-muted d-table-sm-none">{{ bp.reason|truncatechars:50 }}</td>
+                <td class="d-table-md-none">{{ bp.issued_by.get_full_name|default:bp.issued_by.username }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No bonus or penalty records.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <a href="{% url 'supervisor:bonus_penalty' %}" class="btn btn-wt">
+        <i class="bi bi-plus-circle me-1"></i>Issue Bonus / Penalty
+      </a>
+    </div>
+  </div>
+
+  <!-- Reports -->
+  <div class="tab-pane fade" id="tab-reports">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if reports %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Submitted At</th>
+                <th>Opening Photo</th>
+                <th>Closing Photo</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reports %}
+              <tr>
+                <td>{{ r.date|date:"d M Y" }}</td>
+                <td>{{ r.submitted_at|time:"H:i" }}</td>
+                <td>
+                  {% if r.opening_photo %}
+                    <a href="{{ MEDIA_URL }}{{ r.opening_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ r.opening_photo }}" alt="Opening" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>
+                  {% if r.closing_photo %}
+                    <a href="{{ MEDIA_URL }}{{ r.closing_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ r.closing_photo }}" alt="Closing" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td class="text-muted">{{ r.notes|truncatechars:60|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No daily reports submitted yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

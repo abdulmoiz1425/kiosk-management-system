@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} User — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'owner:employees_list' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-person me-2"></i>{{ action }} User
+      </h4>
+    </div>
+
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-pencil me-2"></i>User Details
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">First Name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              {{ form.last_name }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            {{ form.email }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Phone</label>
+            {{ form.phone }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+            {{ form.role }}
+          </div>
+
+          <div class="mb-3 d-none" id="field-kiosk">
+            <label class="form-label fw-semibold">Assigned Kiosk <span class="text-danger">*</span></label>
+            {{ form.kiosk }}
+            {% if form.kiosk.errors %}<div class="text-danger small mt-1">{{ form.kiosk.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3 d-none" id="field-assigned-kiosks">
+            <label class="form-label fw-semibold">Assigned Kiosks <span class="text-danger">*</span></label>
+            <div class="form-text mb-1">Hold Ctrl / Cmd to select multiple kiosks.</div>
+            {{ form.assigned_kiosks }}
+            {% if form.assigned_kiosks.errors %}<div class="text-danger small mt-1">{{ form.assigned_kiosks.errors.0 }}</div>{% endif %}
+          </div>
+
+          {% if form.password %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+            {{ form.password }}
+            {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+            {{ form.confirm_password }}
+          </div>
+          {% endif %}
+
+          {% if form.is_active %}
+          <div class="mb-4 form-check">
+            {{ form.is_active }}
+            <label class="form-check-label fw-semibold ms-2">Active</label>
+          </div>
+          {% endif %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+          {% endif %}
+
+          <button type="submit" class="btn btn-wt w-100 py-2 fs-6">
+            <i class="bi bi-check-circle me-2"></i>{{ action }} User
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const roleSelect = document.getElementById('id_role');
+  const kioskField = document.getElementById('field-kiosk');
+  const assignedField = document.getElementById('field-assigned-kiosks');
+
+  function updateFields() {
+    const role = roleSelect.value;
+    kioskField.classList.add('d-none');
+    assignedField.classList.add('d-none');
+
+    if (role === 'employee') {
+      kioskField.classList.remove('d-none');
+    } else if (role === 'supervisor') {
+      assignedField.classList.remove('d-none');
+    }
+    // owner: both fields stay hidden
+  }
+
+  roleSelect.addEventListener('change', updateFields);
+  updateFields(); // run immediately to handle edit mode pre-selected role
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-5">
+
+    <div class="card card-wt">
+      <div class="card-header text-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+      </div>
+      <div class="card-body p-4 text-center">
+        <p class="fs-5 mb-1">Are you sure you want to delete:</p>
+        <p class="fw-bold fs-4 mb-4" style="color:var(--wt-dark);">{{ object_name }}</p>
+        <p class="text-muted small mb-4">This action cannot be undone.</p>
+
+        <form method="post" class="d-flex gap-3 justify-content-center">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger px-4">
+            <i class="bi bi-trash me-2"></i>Yes, Delete
+          </button>
+          {% if cancel_id %}
+            <a href="{% url cancel_url cancel_id %}" class="btn btn-outline-secondary px-4">Cancel</a>
+          {% else %}
+            <a href="{% url cancel_url %}" class="btn btn-outline-secondary px-4">Cancel</a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

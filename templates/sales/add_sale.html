@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Daily Sales — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+
+    <div class="d-flex align-items-center mb-4">
+      <a href="{% url 'dashboard:employee' %}" class="btn btn-sm btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+        <i class="bi bi-cash me-2"></i>Daily Sales — {{ today }}
+      </h4>
+    </div>
+
+    {% if existing %}
+    <div class="alert alert-info">
+      <i class="bi bi-pencil me-2"></i>Updating today's sales entry.
+    </div>
+    {% endif %}
+
+    <div class="card card-wt">
+      <div class="card-header">
+        <i class="bi bi-currency-dollar me-2"></i>Enter Today's Sales
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ form.cash_amount.label }}</label>
+            {{ form.cash_amount }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ form.bank_transfer_amount.label }}</label>
+            {{ form.bank_transfer_amount }}
+          </div>
+
+          <!-- Live total -->
+          <div class="mb-4 p-3 rounded" style="background: var(--wt-light); border-left: 4px solid var(--wt-mint);">
+            <div class="d-flex justify-content-between">
+              <span class="fw-semibold">Total</span>
+              <span class="fw-bold fs-5" style="color: var(--wt-dark);" id="total-display">0.00 SAR</span>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Notes (optional)</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn btn-wt-mint w-100 py-2 fs-6">
+            <i class="bi bi-check-circle me-2"></i>Save Sales
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateTotal() {
+  const cash = parseFloat(document.getElementById('id_cash_amount').value) || 0;
+  const bank = parseFloat(document.getElementById('id_bank_transfer_amount').value) || 0;
+  document.getElementById('total-display').textContent = (cash + bank).toFixed(2) + ' SAR';
+}
+document.getElementById('id_cash_amount').addEventListener('input', updateTotal);
+document.getElementById('id_bank_transfer_amount').addEventListener('input', updateTotal);
+
+// Init if editing
+window.addEventListener('load', updateTotal);
+</script>
+{% endblock %}

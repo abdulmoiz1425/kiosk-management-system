@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% block title %}{{ kiosk.name }} — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-2">
+  <div class="d-flex align-items-center">
+    <a href="{% url 'owner:kiosks_list' %}" class="btn btn-sm btn-outline-secondary me-3">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+      <h4 class="fw-bold mb-0" style="color:var(--wt-dark);">
+        <i class="bi bi-shop me-2"></i>{{ kiosk.name }}
+      </h4>
+      <small class="text-muted">{{ kiosk.location }}{% if kiosk.address %} — {{ kiosk.address }}{% endif %}</small>
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'owner:edit_kiosk' kiosk.id %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-pencil me-1"></i>Edit
+    </a>
+    <a href="{% url 'owner:delete_kiosk' kiosk.id %}" class="btn btn-sm btn-outline-danger">
+      <i class="bi bi-trash me-1"></i>Delete
+    </a>
+  </div>
+</div>
+
+<!-- Month summary -->
+<div class="row g-3 mb-4 mt-1">
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ employees.count }}</div>
+          <div class="stat-label">Employees</div>
+        </div>
+        <i class="bi bi-people stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ total_month_sales }}</div>
+          <div class="stat-label">This Month Sales (SAR)</div>
+        </div>
+        <i class="bi bi-cash-coin stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ total_month_expenses }}</div>
+          <div class="stat-label">This Month Expenses (SAR)</div>
+        </div>
+        <i class="bi bi-receipt stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-value">{{ recent_visits|length }}</div>
+          <div class="stat-label">Supervisor Visits</div>
+        </div>
+        <i class="bi bi-clipboard-check stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Employees list -->
+<div class="card card-wt mb-4">
+  <div class="card-header"><i class="bi bi-people me-2"></i>Assigned Employees</div>
+  <div class="card-body p-0">
+    {% if employees %}
+    <ul class="list-group list-group-flush">
+      {% for emp in employees %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ emp.get_full_name|default:emp.username }}</strong>
+          {% if emp.phone %}<span class="text-muted ms-2 small">{{ emp.phone }}</span>{% endif %}
+        </div>
+        <a href="{% url 'supervisor:employee_detail' emp.id %}" class="btn btn-sm btn-wt">
+          <i class="bi bi-eye"></i>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted text-center py-3">No employees assigned.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Tabs: Sales / Attendance / Supervisor Visits -->
+<ul class="nav nav-tabs nav-fill mb-4">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#kd-sales">
+      <i class="bi bi-cash me-1"></i>Sales
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kd-att">
+      <i class="bi bi-person-check me-1"></i>Attendance
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kd-visits">
+      <i class="bi bi-clipboard-check me-1"></i>Visits
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kd-exp">
+      <i class="bi bi-receipt me-1"></i>Expenses
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kd-reports">
+      <i class="bi bi-file-earmark-text me-1"></i>Reports
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <!-- Sales -->
+  <div class="tab-pane fade show active" id="kd-sales">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if recent_sales %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th class="d-table-sm-none">Cash</th>
+                <th class="d-table-sm-none">Bank Transfer</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in recent_sales %}
+              <tr>
+                <td>{{ s.date|date:"d M Y" }}</td>
+                <td class="d-table-sm-none">{{ s.cash_amount }} SAR</td>
+                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} SAR</td>
+                <td><strong>{{ s.total }} SAR</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No sales this month.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div class="tab-pane fade" id="kd-att">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if recent_attendance %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Employee</th>
+                <th>Check-in</th>
+                <th>Check-in Photo</th>
+                <th>Check-out</th>
+                <th>Check-out Photo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in recent_attendance %}
+              <tr>
+                <td>{{ a.date|date:"d M Y" }}</td>
+                <td>{{ a.employee.get_full_name|default:a.employee.username }}</td>
+                <td>{% if a.check_in_time %}{{ a.check_in_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>
+                  {% if a.check_in_photo %}
+                    <a href="{{ MEDIA_URL }}{{ a.check_in_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ a.check_in_photo }}" alt="Check-in" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>{% if a.check_out_time %}{{ a.check_out_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>
+                  {% if a.check_out_photo %}
+                    <a href="{{ MEDIA_URL }}{{ a.check_out_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ a.check_out_photo }}" alt="Check-out" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>
+                  {% if a.check_in_time and a.check_out_time %}
+                    <span class="badge bg-success">Complete</span>
+                  {% elif a.check_in_time %}
+                    <span class="badge bg-warning text-dark">Checked In</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Absent</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No attendance this month.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Visits -->
+  <div class="tab-pane fade" id="kd-visits">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if recent_visits %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Supervisor</th>
+                <th>Rating</th>
+                <th class="d-table-md-none">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for v in recent_visits %}
+              <tr>
+                <td>{{ v.date|date:"d M Y" }}</td>
+                <td>{{ v.supervisor.get_full_name|default:v.supervisor.username }}</td>
+                <td>
+                  {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= v.rating %}-fill text-warning{% endif %} small"></i>
+                  {% endfor %}
+                </td>
+                <td class="text-muted d-table-md-none">{{ v.notes|truncatechars:60|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No supervisor visits yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses -->
+  <div class="tab-pane fade" id="kd-exp">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if recent_expenses %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th class="d-table-sm-none">Description</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in recent_expenses %}
+              <tr>
+                <td>{{ e.date|date:"d M Y" }}</td>
+                <td><span class="badge bg-secondary">{{ e.get_category_display }}</span></td>
+                <td class="d-table-sm-none">{{ e.description }}</td>
+                <td><strong>{{ e.amount }} SAR</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No expenses this month.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports -->
+  <div class="tab-pane fade" id="kd-reports">
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        {% if recent_reports %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Submitted By</th>
+                <th>Submitted At</th>
+                <th>Opening Photo</th>
+                <th>Closing Photo</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in recent_reports %}
+              <tr>
+                <td>{{ r.date|date:"d M Y" }}</td>
+                <td>{{ r.submitted_by.get_full_name|default:r.submitted_by.username }}</td>
+                <td>{{ r.submitted_at|time:"H:i" }}</td>
+                <td>
+                  {% if r.opening_photo %}
+                    <a href="{{ MEDIA_URL }}{{ r.opening_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ r.opening_photo }}" alt="Opening" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>
+                  {% if r.closing_photo %}
+                    <a href="{{ MEDIA_URL }}{{ r.closing_photo }}" target="_blank">
+                      <img src="{{ MEDIA_URL }}{{ r.closing_photo }}" alt="Closing" style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+                    </a>
+                  {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td class="text-muted">{{ r.notes|truncatechars:60|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No daily reports this month.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Kiosks — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+    <i class="bi bi-shop me-2"></i>All Kiosks
+  </h4>
+  <a href="{% url 'owner:create_kiosk' %}" class="btn btn-wt btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>New Kiosk
+  </a>
+</div>
+
+<div class="card card-wt">
+  <div class="card-header">
+    <i class="bi bi-grid me-2"></i>Kiosk Overview — Today's Status
+  </div>
+  <div class="card-body p-0">
+    {% if kiosk_rows %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-wt">
+          <tr>
+            <th>Kiosk</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Checked In</th>
+            <th>Sales Today</th>
+            <th>Expenses Today</th>
+            <th>Report</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in kiosk_rows %}
+          <tr>
+            <td>
+              <strong>{{ row.kiosk.name }}</strong>
+            </td>
+            <td class="text-muted">{{ row.kiosk.location }}</td>
+            <td>
+              {% if row.kiosk.is_active %}
+                <span class="badge bg-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge {% if row.checked_in > 0 %}bg-success{% else %}bg-secondary{% endif %}">
+                {{ row.checked_in }}/{{ row.emp_count }}
+              </span>
+            </td>
+            <td>
+              {% if row.sale %}
+                <span class="fw-semibold" style="color:var(--wt-dark);">{{ row.sale.total }} SAR</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if row.expenses %}
+                <span class="fw-semibold">{{ row.expenses }} SAR</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if row.report_submitted %}
+                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Submitted</span>
+              {% else %}
+                <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pending</span>
+              {% endif %}
+            </td>
+            <td class="d-flex gap-1">
+              <a href="{% url 'owner:kiosk_detail' row.kiosk.id %}" class="btn btn-sm btn-wt">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{% url 'owner:edit_kiosk' row.kiosk.id %}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'owner:delete_kiosk' row.kiosk.id %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-4">No kiosks found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
