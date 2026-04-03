@@ -12,19 +12,21 @@
     </h4>
   </div>
   <!-- Filter by kiosk -->
-  <form method="get" class="d-flex gap-2 align-items-center">
-    <select name="kiosk" class="form-select form-select-sm" style="min-width:160px;" onchange="this.form.submit()">
-      <option value="">All Kiosks</option>
+  <div class="dropdown">
+    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {% if selected_kiosk %}
+        {% for k in kiosks %}{% if selected_kiosk == k.id|stringformat:"s" %}{{ k.name }}{% endif %}{% endfor %}
+      {% else %}
+        All Kiosks
+      {% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item {% if not selected_kiosk %}active{% endif %}" href="{% url 'owner:visits' %}">All Kiosks</a></li>
       {% for k in kiosks %}
-      <option value="{{ k.id }}" {% if selected_kiosk == k.id|stringformat:"s" %}selected{% endif %}>
-        {{ k.name }}
-      </option>
+      <li><a class="dropdown-item {% if selected_kiosk == k.id|stringformat:"s" %}active{% endif %}" href="?kiosk={{ k.id }}">{{ k.name }}</a></li>
       {% endfor %}
-    </select>
-    {% if selected_kiosk %}
-    <a href="{% url 'owner:visits' %}" class="btn btn-sm btn-outline-secondary">Clear</a>
-    {% endif %}
-  </form>
+    </ul>
+  </div>
 </div>
 
 <div class="card card-wt">

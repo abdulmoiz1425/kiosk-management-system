@@ -22,16 +22,13 @@
 <!-- ── Top Navbar ──────────────────────────────────── -->
 <nav class="navbar navbar-expand-lg navbar-wt">
     <div class="container-fluid px-3">
-        <a class="navbar-brand" href="{% url 'dashboard:home' %}">
-            <img src="{% static 'img/logo.png' %}" alt="Wafaa Tech">
-        </a>
         <!-- Mobile: user badge in navbar -->
         {% if user.is_authenticated %}
         <span class="badge badge-{{ user.role }} rounded-pill px-2 py-1 d-md-none ms-auto me-2" style="font-size:.75rem;">
             {{ user.get_full_name|default:user.username }}
         </span>
         {% endif %}
-        <button class="navbar-toggler d-none d-md-block" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
