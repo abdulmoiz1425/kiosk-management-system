@@ -14,8 +14,12 @@ class DailyReport(models.Model):
         related_name='daily_reports',
     )
     date = models.DateField()
-    opening_photo = models.ImageField(upload_to='', blank=True)  # path set by storage handler
-    closing_photo = models.ImageField(upload_to='', blank=True)  # path set by storage handler
+    opening_photo = models.ImageField(
+        upload_to='', blank=True,
+        verbose_name='Report Generator (Main Photo)')
+    closing_photo = models.ImageField(
+        upload_to='', blank=True,
+        verbose_name='Shift Report')
     notes = models.TextField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
@@ -25,3 +29,17 @@ class DailyReport(models.Model):
 
     def __str__(self):
         return f"{self.kiosk} — {self.date}"
+
+
+class ReportPhoto(models.Model):
+    """Additional photos uploaded under Report Generator."""
+    report = models.ForeignKey(
+        DailyReport,
+        on_delete=models.CASCADE,
+        related_name='extra_photos',
+    )
+    photo = models.ImageField(upload_to='reports/extra/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Photo for {self.report}"

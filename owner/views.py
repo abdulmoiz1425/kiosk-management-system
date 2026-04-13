@@ -11,7 +11,7 @@ from kiosks.models import Kiosk
 from .forms import KioskForm, EmployeeCreateForm, EmployeeUpdateForm
 from attendance.models import Attendance
 from sales.models import Sale
-from expenses.models import Expense
+from expenses.models import Expense, NoExpenseDay
 from reports.models import DailyReport
 from supervisor.models import SupervisorVisit, BonusPenalty
 
@@ -210,6 +210,15 @@ def monthly_report(request):
             'attendance_pct': attendance_pct,
         })
 
+    # --- No Expense Days per kiosk ---
+    no_expense_rows = []
+    for k in kiosks:
+        days = NoExpenseDay.objects.filter(
+            kiosk=k, date__gte=from_date, date__lte=to_date
+        ).order_by('date')
+        if days.exists():
+            no_expense_rows.append({'kiosk': k, 'days': days})
+
     # --- Performance (supervisor visits avg rating per kiosk) ---
     perf_rows = []
     for k in kiosks:
@@ -237,6 +246,7 @@ def monthly_report(request):
         'grand_net': grand_sales - grand_expenses,
         'attendance_rows': attendance_rows,
         'perf_rows': perf_rows,
+        'no_expense_rows': no_expense_rows,
         'today': today,
         'prev_month': (month - 2) % 12 + 1,
         'prev_year': year - 1 if month == 1 else year,

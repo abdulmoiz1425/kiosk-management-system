@@ -29,7 +29,7 @@
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <div class="stat-value">{{ grand_sales }}</div>
-          <div class="stat-label">Total Sales (SAR)</div>
+          <div class="stat-label">Total Sales (RM)</div>
         </div>
         <i class="bi bi-cash-coin stat-icon"></i>
       </div>
@@ -40,7 +40,7 @@
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <div class="stat-value">{{ grand_expenses }}</div>
-          <div class="stat-label">Total Expenses (SAR)</div>
+          <div class="stat-label">Total Expenses (RM)</div>
         </div>
         <i class="bi bi-receipt stat-icon"></i>
       </div>
@@ -51,7 +51,7 @@
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <div class="stat-value {% if grand_net < 0 %}text-danger{% endif %}">{{ grand_net }}</div>
-          <div class="stat-label">Net Revenue (SAR)</div>
+          <div class="stat-label">Net Revenue (RM)</div>
         </div>
         <i class="bi bi-graph-up-arrow stat-icon"></i>
       </div>
@@ -76,6 +76,11 @@
       <i class="bi bi-star me-1"></i>Performance
     </button>
   </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-no-expenses">
+      <i class="bi bi-slash-circle me-1"></i>No Expense Days
+    </button>
+  </li>
 </ul>
 
 <div class="tab-content">
@@ -90,9 +95,9 @@
               <tr>
                 <th>Kiosk</th>
                 <th class="d-table-md-none">Location</th>
-                <th>Sales (SAR)</th>
-                <th class="d-table-sm-none">Expenses (SAR)</th>
-                <th>Net (SAR)</th>
+                <th>Sales (RM)</th>
+                <th class="d-table-sm-none">Expenses (RM)</th>
+                <th>Net (RM)</th>
               </tr>
             </thead>
             <tbody>
@@ -221,6 +226,36 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Expense Days Tab -->
+  <div class="tab-pane fade" id="tab-no-expenses">
+    <div class="card card-wt">
+      <div class="card-body">
+        {% if no_expense_rows %}
+          {% for row in no_expense_rows %}
+          <div class="mb-4">
+            <h6 class="fw-bold mb-2" style="color:var(--wt-dark);">
+              <i class="bi bi-shop me-1"></i>{{ row.kiosk.name }}
+            </h6>
+            <div class="d-flex flex-wrap gap-2">
+              {% for ned in row.days %}
+              <span class="badge rounded-pill px-3 py-2" style="background-color:var(--wt-light); color:var(--wt-dark); border:1px solid var(--wt-mint);">
+                <i class="bi bi-slash-circle me-1 text-danger"></i>
+                {{ ned.date|date:"d M Y" }} — No Expenses
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center py-4">
+            <i class="bi bi-check-circle fs-2 d-block mb-2 text-success"></i>
+            No "No Expense" days recorded this month.
+          </p>
+        {% endif %}
       </div>
     </div>
   </div>

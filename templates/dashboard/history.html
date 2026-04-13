@@ -43,22 +43,34 @@
       <div class="card-body p-0">
         {% if attendances %}
         <div class="table-responsive">
-          <table class="table table-hover mb-0">
+          <table class="table table-hover mb-0 align-middle">
             <thead class="table-wt">
               <tr>
                 <th>Date</th>
                 <th>Check-in</th>
-                <th>Check-in Photo</th>
                 <th>Check-out</th>
+                <th>Total Hours</th>
+                <th>Overtime</th>
+                <th>Check-in Photo</th>
                 <th>Check-out Photo</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {% for a in attendances %}
+              {% for row in attendances %}
+              {% with a=row.record %}
               <tr>
                 <td>{{ a.date|date:"d M Y" }}</td>
                 <td>{% if a.check_in_time %}{{ a.check_in_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>{% if a.check_out_time %}{{ a.check_out_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td><span class="fw-semibold" style="color:var(--wt-dark);">{{ row.worked_fmt }}</span></td>
+                <td>
+                  {% if row.overtime_fmt != '—' %}
+                    <span class="badge bg-warning text-dark">{{ row.overtime_fmt }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
                 <td>
                   {% if a.check_in_photo %}
                     <a href="{{ MEDIA_URL }}{{ a.check_in_photo }}" target="_blank">
@@ -68,7 +80,6 @@
                     <span class="text-muted">—</span>
                   {% endif %}
                 </td>
-                <td>{% if a.check_out_time %}{{ a.check_out_time|time:"H:i" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
                 <td>
                   {% if a.check_out_photo %}
                     <a href="{{ MEDIA_URL }}{{ a.check_out_photo }}" target="_blank">
@@ -88,8 +99,24 @@
                   {% endif %}
                 </td>
               </tr>
+              {% endwith %}
               {% endfor %}
             </tbody>
+            <!-- Monthly Summary Footer -->
+            <tfoot>
+              <tr style="background-color: var(--wt-light); border-top: 2px solid var(--wt-mint);">
+                <td colspan="3" class="fw-bold text-end pe-3" style="color:var(--wt-dark);">
+                  Monthly Total (Last 30 Days)
+                </td>
+                <td class="fw-bold" style="color:var(--wt-dark);">{{ monthly_worked_fmt }}</td>
+                <td class="fw-bold">
+                  {% if monthly_overtime_fmt != '—' %}
+                    <span class="badge bg-warning text-dark">{{ monthly_overtime_fmt }}</span>
+                  {% else %}—{% endif %}
+                </td>
+                <td colspan="3"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
         {% else %}
@@ -109,9 +136,9 @@
             <thead class="table-wt">
               <tr>
                 <th>Date</th>
-                <th>Cash (SAR)</th>
-                <th>Bank Transfer (SAR)</th>
-                <th>Total (SAR)</th>
+                <th>Cash (RM)</th>
+                <th>Bank Transfer (RM)</th>
+                <th>Total (RM)</th>
               </tr>
             </thead>
             <tbody>
@@ -145,7 +172,7 @@
                 <th>Date</th>
                 <th>Category</th>
                 <th>Description</th>
-                <th>Amount (SAR)</th>
+                <th>Amount (RM)</th>
                 <th>Receipt</th>
               </tr>
             </thead>

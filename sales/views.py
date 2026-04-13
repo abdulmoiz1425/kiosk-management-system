@@ -16,7 +16,7 @@ def add_sale(request):
     existing = Sale.objects.filter(kiosk=request.user.kiosk, date=today).first()
 
     if request.method == 'POST':
-        form = SaleForm(request.POST, instance=existing)
+        form = SaleForm(request.POST, request.FILES, instance=existing)
         if form.is_valid():
             sale = form.save(commit=False)
             sale.kiosk = request.user.kiosk

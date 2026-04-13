@@ -14,8 +14,11 @@ class Sale(models.Model):
         related_name='sales',
     )
     date = models.DateField()
-    cash_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    bank_transfer_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    starting_cash        = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cash_amount          = models.DecimalField(max_digits=10, decimal_places=2, default=0)   # Cash Payments
+    bank_transfer_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)   # QR Bank Account
+    actual_cash          = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cashier_photo        = models.ImageField(upload_to='sales/cashier/', null=True, blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -25,6 +28,14 @@ class Sale(models.Model):
 
     def __str__(self):
         return f"{self.kiosk} — {self.date}"
+
+    @property
+    def expected_cash(self):
+        return self.starting_cash + self.cash_amount
+
+    @property
+    def difference(self):
+        return self.actual_cash - self.expected_cash
 
     @property
     def total(self):

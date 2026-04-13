@@ -19,7 +19,7 @@
         <i class="bi bi-clipboard-plus me-2"></i>Visit Details
       </div>
       <div class="card-body p-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
 
           <div class="mb-3">
@@ -28,20 +28,105 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Visit Date <span class="text-danger">*</span></label>
-            {{ form.date }}
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Rating <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold">Overall Rating <span class="text-danger">*</span></label>
             {{ form.rating }}
-            <!-- Visual star preview -->
             <div id="star-preview" class="mt-2 fs-4"></div>
           </div>
 
           <div class="mb-4">
             <label class="form-label fw-semibold">Notes</label>
             {{ form.notes }}
+          </div>
+
+          <!-- Evaluation Categories -->
+          <hr>
+          <h6 class="fw-bold mb-3" style="color:var(--wt-dark);">
+            <i class="bi bi-clipboard2-check me-2"></i>Evaluation Categories
+          </h6>
+
+          <!-- 1. Employee Attendance -->
+          <div class="card mb-3 border-0 bg-light rounded-3">
+            <div class="card-body py-3">
+              <p class="fw-semibold mb-2"><i class="bi bi-person-check me-2 text-success"></i>1. Employee Attendance</p>
+              <div class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label small text-muted mb-1">Rating</label>
+                  {{ form.attendance_rating }}
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label class="form-label small text-muted mb-1">Photo (optional)</label>
+                  {{ form.attendance_photo }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Kiosk Cleanliness -->
+          <div class="card mb-3 border-0 bg-light rounded-3">
+            <div class="card-body py-3">
+              <p class="fw-semibold mb-2"><i class="bi bi-stars me-2 text-info"></i>2. Kiosk Cleanliness</p>
+              <div class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label small text-muted mb-1">Rating</label>
+                  {{ form.cleanliness_rating }}
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label class="form-label small text-muted mb-1">Photo (optional)</label>
+                  {{ form.cleanliness_photo }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Device Care & Safety -->
+          <div class="card mb-3 border-0 bg-light rounded-3">
+            <div class="card-body py-3">
+              <p class="fw-semibold mb-2"><i class="bi bi-shield-check me-2 text-warning"></i>3. Device Care & Safety</p>
+              <div class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label small text-muted mb-1">Rating</label>
+                  {{ form.device_care_rating }}
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label class="form-label small text-muted mb-1">Photo (optional)</label>
+                  {{ form.device_care_photo }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Customer Service & Product Explanation -->
+          <div class="card mb-3 border-0 bg-light rounded-3">
+            <div class="card-body py-3">
+              <p class="fw-semibold mb-2"><i class="bi bi-chat-heart me-2 text-danger"></i>4. Customer Service & Product Explanation</p>
+              <div class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label small text-muted mb-1">Rating</label>
+                  {{ form.customer_service_rating }}
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label class="form-label small text-muted mb-1">Photo (optional)</label>
+                  {{ form.customer_service_photo }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Marketing & Media -->
+          <div class="card mb-4 border-0 bg-light rounded-3">
+            <div class="card-body py-3">
+              <p class="fw-semibold mb-2"><i class="bi bi-megaphone me-2 text-primary"></i>5. Marketing & Media</p>
+              <div class="row g-2">
+                <div class="col-12 col-sm-5">
+                  <label class="form-label small text-muted mb-1">Rating</label>
+                  {{ form.marketing_rating }}
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label class="form-label small text-muted mb-1">Photo (optional)</label>
+                  {{ form.marketing_photo }}
+                </div>
+              </div>
+            </div>
           </div>
 
           <button type="submit" class="btn btn-wt w-100 py-2 fs-6">

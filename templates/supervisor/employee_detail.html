@@ -122,9 +122,9 @@
               {% for s in sales %}
               <tr>
                 <td>{{ s.date|date:"d M Y" }}</td>
-                <td class="d-table-sm-none">{{ s.cash_amount }} SAR</td>
-                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} SAR</td>
-                <td><strong>{{ s.total }} SAR</strong></td>
+                <td class="d-table-sm-none">{{ s.cash_amount }} RM</td>
+                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} RM</td>
+                <td><strong>{{ s.total }} RM</strong></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -153,7 +153,7 @@
                 <td>{{ e.date|date:"d M Y" }}</td>
                 <td><span class="badge bg-secondary">{{ e.get_category_display }}</span></td>
                 <td>{{ e.description }}</td>
-                <td><strong>{{ e.amount }} SAR</strong></td>
+                <td><strong>{{ e.amount }} RM</strong></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -193,7 +193,7 @@
                     <span class="badge bg-danger">Penalty</span>
                   {% endif %}
                 </td>
-                <td><strong>{{ bp.amount }} SAR</strong></td>
+                <td><strong>{{ bp.amount }} RM</strong></td>
                 <td class="text-muted d-table-sm-none">{{ bp.reason|truncatechars:50 }}</td>
                 <td class="d-table-md-none">{{ bp.issued_by.get_full_name|default:bp.issued_by.username }}</td>
               </tr>

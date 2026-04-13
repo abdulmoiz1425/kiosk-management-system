@@ -65,15 +65,16 @@ def dashboard(request):
 @supervisor_required
 def log_visit(request):
     if request.method == 'POST':
-        form = VisitForm(request.POST, supervisor=request.user)
+        form = VisitForm(request.POST, request.FILES, supervisor=request.user)
         if form.is_valid():
             visit = form.save(commit=False)
             visit.supervisor = request.user
+            visit.date = timezone.localdate()
             visit.save()
             messages.success(request, f'Visit to {visit.kiosk.name} logged — Rating: {visit.rating}/5')
             return redirect('supervisor:visits')
     else:
-        form = VisitForm(supervisor=request.user, initial={'date': timezone.localdate()})
+        form = VisitForm(supervisor=request.user)
 
     return render(request, 'supervisor/log_visit.html', {'form': form})
 
@@ -96,7 +97,7 @@ def visits_list(request):
 def edit_visit(request, visit_id):
     visit = get_object_or_404(SupervisorVisit, id=visit_id, supervisor=request.user)
     if request.method == 'POST':
-        form = VisitForm(request.POST, instance=visit, supervisor=request.user)
+        form = VisitForm(request.POST, request.FILES, instance=visit, supervisor=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Visit updated successfully.')
@@ -129,7 +130,7 @@ def add_bonus_penalty(request):
             bp = form.save(commit=False)
             bp.issued_by = request.user
             bp.save()
-            messages.success(request, f'{bp.get_type_display()} of {bp.amount} SAR issued to {bp.employee.get_full_name() or bp.employee.username}.')
+            messages.success(request, f'{bp.get_type_display()} of {bp.amount} RM issued to {bp.employee.get_full_name() or bp.employee.username}.')
             return redirect('supervisor:bonus_penalty')
     else:
         form = BonusPenaltyForm(supervisor=request.user, initial={'date': timezone.localdate()})
@@ -168,7 +169,7 @@ def delete_bonus_penalty(request, bp_id):
         messages.success(request, 'Record deleted.')
         return redirect('supervisor:bonus_penalty')
     return render(request, 'supervisor/confirm_delete.html', {
-        'object_name': f'{bp.get_type_display()} — {bp.employee.get_full_name() or bp.employee.username} — {bp.amount} SAR',
+        'object_name': f'{bp.get_type_display()} — {bp.employee.get_full_name() or bp.employee.username} — {bp.amount} RM',
         'cancel_url': 'supervisor:bonus_penalty',
     })
 

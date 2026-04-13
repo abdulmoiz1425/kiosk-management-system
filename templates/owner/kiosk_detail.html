@@ -42,7 +42,7 @@
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <div class="stat-value">{{ total_month_sales }}</div>
-          <div class="stat-label">This Month Sales (SAR)</div>
+          <div class="stat-label">This Month Sales (RM)</div>
         </div>
         <i class="bi bi-cash-coin stat-icon"></i>
       </div>
@@ -53,7 +53,7 @@
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <div class="stat-value">{{ total_month_expenses }}</div>
-          <div class="stat-label">This Month Expenses (SAR)</div>
+          <div class="stat-label">This Month Expenses (RM)</div>
         </div>
         <i class="bi bi-receipt stat-icon"></i>
       </div>
@@ -145,9 +145,9 @@
               {% for s in recent_sales %}
               <tr>
                 <td>{{ s.date|date:"d M Y" }}</td>
-                <td class="d-table-sm-none">{{ s.cash_amount }} SAR</td>
-                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} SAR</td>
-                <td><strong>{{ s.total }} SAR</strong></td>
+                <td class="d-table-sm-none">{{ s.cash_amount }} RM</td>
+                <td class="d-table-sm-none">{{ s.bank_transfer_amount }} RM</td>
+                <td><strong>{{ s.total }} RM</strong></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -279,7 +279,7 @@
                 <td>{{ e.date|date:"d M Y" }}</td>
                 <td><span class="badge bg-secondary">{{ e.get_category_display }}</span></td>
                 <td class="d-table-sm-none">{{ e.description }}</td>
-                <td><strong>{{ e.amount }} SAR</strong></td>
+                <td><strong>{{ e.amount }} RM</strong></td>
               </tr>
               {% endfor %}
             </tbody>

@@ -14,6 +14,44 @@
       </h4>
     </div>
 
+    <!-- No Expenses Toggle -->
+    <div class="card mb-4" style="border-left: 4px solid {% if no_expense_day %}#dc3545{% else %}var(--wt-mint){% endif %}; background:#f8fffe;">
+      <div class="card-body d-flex justify-content-between align-items-center py-3">
+        <div>
+          <p class="fw-semibold mb-0">
+            <i class="bi bi-slash-circle me-2 {% if no_expense_day %}text-danger{% else %}text-muted{% endif %}"></i>
+            No Expenses Today
+          </p>
+          <small class="text-muted">
+            {% if no_expense_day %}
+              Recorded at {{ no_expense_day.created_at|time:"H:i" }} — expense form is locked.
+            {% else %}
+              Enable this if there are no expenses for today.
+            {% endif %}
+          </small>
+        </div>
+        <form method="post" action="{% url 'expenses:toggle_no_expense' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn {% if no_expense_day %}btn-danger{% else %}btn-outline-secondary{% endif %} btn-sm">
+            {% if no_expense_day %}
+              <i class="bi bi-x-circle me-1"></i>Cancel
+            {% else %}
+              <i class="bi bi-check-circle me-1"></i>Mark No Expenses
+            {% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    {% if no_expense_day %}
+    <!-- Locked state -->
+    <div class="alert alert-warning d-flex align-items-center gap-2">
+      <i class="bi bi-lock-fill fs-5"></i>
+      <span>Expense entry is <strong>locked</strong> for today. No expenses have been recorded.</span>
+    </div>
+
+    {% else %}
+    <!-- Expense Form -->
     <div class="card card-wt mb-4">
       <div class="card-header">
         <i class="bi bi-plus-circle me-2"></i>New Expense
@@ -28,7 +66,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Amount (SAR) <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold">Amount (RM) <span class="text-danger">*</span></label>
             {{ form.amount }}
           </div>
 
@@ -69,7 +107,7 @@
               {{ expense.description }}
             </div>
             <div class="d-flex align-items-center gap-2">
-              <strong style="color: var(--wt-dark);">{{ expense.amount }} SAR</strong>
+              <strong style="color: var(--wt-dark);">{{ expense.amount }} RM</strong>
               <a href="{% url 'expenses:edit' expense.id %}" class="btn btn-sm btn-outline-secondary py-0 px-1">
                 <i class="bi bi-pencil"></i>
               </a>
@@ -82,6 +120,7 @@
         </ul>
       </div>
     </div>
+    {% endif %}
     {% endif %}
 
   </div>

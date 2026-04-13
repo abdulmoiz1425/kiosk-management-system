@@ -31,3 +31,25 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.kiosk} — {self.category} — {self.amount}"
+
+
+class NoExpenseDay(models.Model):
+    kiosk = models.ForeignKey(
+        'kiosks.Kiosk',
+        on_delete=models.CASCADE,
+        related_name='no_expense_days',
+    )
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='no_expense_days',
+    )
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('kiosk', 'date')
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"No Expenses — {self.kiosk} — {self.date}"

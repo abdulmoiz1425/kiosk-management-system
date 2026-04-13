@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum
-from .models import DailyReport
+from .models import DailyReport, ReportPhoto
 from .forms import DailyReportForm
 from core.storage import save_upload
 from sales.models import Sale
@@ -41,16 +41,21 @@ def submit_report(request):
                 report.opening_photo = save_upload(
                     request.FILES['opening_photo'],
                     kiosk.name,
-                    'opening'
+                    'report_generator'
                 )
             if 'closing_photo' in request.FILES:
                 report.closing_photo = save_upload(
                     request.FILES['closing_photo'],
                     kiosk.name,
-                    'closing'
+                    'shift_report'
                 )
 
             report.save()
+
+            # Save additional Report Generator photos
+            for extra_file in request.FILES.getlist('extra_photos'):
+                ReportPhoto.objects.create(report=report, photo=extra_file)
+
             messages.success(request, 'Daily report submitted successfully. Good work today!')
             return redirect('dashboard:employee')
     else:

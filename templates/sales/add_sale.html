@@ -25,27 +25,73 @@
         <i class="bi bi-currency-dollar me-2"></i>Enter Today's Sales
       </div>
       <div class="card-body p-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
 
+          <!-- 1. Starting Cash Amount -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">{{ form.cash_amount.label }}</label>
+            <label class="form-label fw-semibold">
+              <i class="bi bi-wallet2 me-1"></i>{{ form.starting_cash.label }} <span class="text-danger">*</span>
+            </label>
+            {{ form.starting_cash }}
+          </div>
+
+          <!-- 2. Cash Payments -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-cash me-1"></i>{{ form.cash_amount.label }} <span class="text-danger">*</span>
+            </label>
             {{ form.cash_amount }}
           </div>
 
+          <!-- 3. QR Bank Account -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">{{ form.bank_transfer_amount.label }}</label>
+            <label class="form-label fw-semibold">
+              <i class="bi bi-qr-code me-1"></i>{{ form.bank_transfer_amount.label }} <span class="text-danger">*</span>
+            </label>
             {{ form.bank_transfer_amount }}
           </div>
 
-          <!-- Live total -->
-          <div class="mb-4 p-3 rounded" style="background: var(--wt-light); border-left: 4px solid var(--wt-mint);">
-            <div class="d-flex justify-content-between">
-              <span class="fw-semibold">Total</span>
-              <span class="fw-bold fs-5" style="color: var(--wt-dark);" id="total-display">0.00 SAR</span>
-            </div>
+          <!-- 4. Actual Cash Amount -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-cash-coin me-1"></i>{{ form.actual_cash.label }} <span class="text-danger">*</span>
+            </label>
+            {{ form.actual_cash }}
           </div>
 
+          <!-- 5. Expected Cash (auto) -->
+          <div class="mb-3 p-3 rounded" style="background: var(--wt-light); border-left: 4px solid var(--wt-mint);">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold"><i class="bi bi-calculator me-1"></i>Expected Cash Amount (RM)</span>
+              <span class="fw-bold fs-5" style="color: var(--wt-dark);" id="expected-display">0.00</span>
+            </div>
+            <small class="text-muted">Starting Cash + Cash Payments</small>
+          </div>
+
+          <!-- 6. Difference (auto) -->
+          <div class="mb-4 p-3 rounded" style="background: var(--wt-light); border-left: 4px solid var(--wt-dark);">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold"><i class="bi bi-arrow-left-right me-1"></i>Difference (RM)</span>
+              <span class="fw-bold fs-5" id="diff-display">0.00</span>
+            </div>
+            <small class="text-muted">Actual Cash − Expected Cash</small>
+          </div>
+
+          <hr>
+
+          <!-- Cashier Photo (mandatory) -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-camera me-1"></i>{{ form.cashier_photo.label }} <span class="text-danger">*</span>
+            </label>
+            {{ form.cashier_photo }}
+            {% if form.cashier_photo.errors %}
+              <div class="text-danger small mt-1">{{ form.cashier_photo.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Notes -->
           <div class="mb-4">
             <label class="form-label fw-semibold">Notes (optional)</label>
             {{ form.notes }}
@@ -64,15 +110,25 @@
 
 {% block extra_js %}
 <script>
-function updateTotal() {
-  const cash = parseFloat(document.getElementById('id_cash_amount').value) || 0;
-  const bank = parseFloat(document.getElementById('id_bank_transfer_amount').value) || 0;
-  document.getElementById('total-display').textContent = (cash + bank).toFixed(2) + ' SAR';
-}
-document.getElementById('id_cash_amount').addEventListener('input', updateTotal);
-document.getElementById('id_bank_transfer_amount').addEventListener('input', updateTotal);
+function recalculate() {
+  const starting = parseFloat(document.getElementById('id_starting_cash').value)   || 0;
+  const cash     = parseFloat(document.getElementById('id_cash_amount').value)      || 0;
+  const actual   = parseFloat(document.getElementById('id_actual_cash').value)      || 0;
 
-// Init if editing
-window.addEventListener('load', updateTotal);
+  const expected = starting + cash;
+  const diff     = actual - expected;
+
+  document.getElementById('expected-display').textContent = expected.toFixed(2);
+
+  const diffEl = document.getElementById('diff-display');
+  diffEl.textContent = diff.toFixed(2);
+  diffEl.style.color = diff < 0 ? '#dc3545' : diff > 0 ? '#198754' : 'inherit';
+}
+
+['id_starting_cash', 'id_cash_amount', 'id_actual_cash'].forEach(id => {
+  document.getElementById(id).addEventListener('input', recalculate);
+});
+
+window.addEventListener('load', recalculate);
 </script>
 {% endblock %}

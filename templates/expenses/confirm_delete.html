@@ -10,7 +10,7 @@
       </div>
       <div class="card-body p-4 text-center">
         <p class="fs-5 mb-1">Delete this expense?</p>
-        <p class="fw-bold fs-5 mb-1" style="color:var(--wt-dark);">{{ expense.get_category_display }} — {{ expense.amount }} SAR</p>
+        <p class="fw-bold fs-5 mb-1" style="color:var(--wt-dark);">{{ expense.get_category_display }} — {{ expense.amount }} RM</p>
         <p class="text-muted small mb-4">{{ expense.description }} — {{ expense.date }}</p>
         <form method="post" class="d-flex gap-3 justify-content-center">
           {% csrf_token %}

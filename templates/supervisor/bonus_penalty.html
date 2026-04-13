@@ -34,7 +34,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Amount (SAR) <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold">Amount (RM) <span class="text-danger">*</span></label>
             {{ form.amount }}
           </div>
 
@@ -88,7 +88,7 @@
                     <span class="badge bg-danger">Penalty</span>
                   {% endif %}
                 </td>
-                <td><strong>{{ bp.amount }} SAR</strong></td>
+                <td><strong>{{ bp.amount }} RM</strong></td>
                 <td class="text-muted">{{ bp.reason|truncatechars:40 }}</td>
                 <td class="d-flex gap-1">
                   <a href="{% url 'supervisor:edit_bonus_penalty' bp.id %}" class="btn btn-sm btn-outline-secondary">

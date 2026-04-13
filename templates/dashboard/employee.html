@@ -20,6 +20,77 @@
 </div>
 {% endif %}
 
+<!-- Employee Contract Summary -->
+<div class="card mb-4" style="border-left: 4px solid var(--wt-dark); background-color: #f8fffe;">
+  <div class="card-header d-flex align-items-center" style="background-color: var(--wt-dark); color: #fff;">
+    <i class="bi bi-file-earmark-text me-2"></i>
+    <strong>Employee Contract Summary</strong>
+  </div>
+  <div class="card-body py-3">
+    <div class="row g-3">
+
+      <div class="col-12 col-md-6">
+        <p class="mb-1 fw-semibold" style="color: var(--wt-dark);">
+          <i class="bi bi-clock me-1"></i> Daily Working Hours
+        </p>
+        <p class="mb-0 text-muted small">
+          10 hours/day &nbsp;|&nbsp; 10:00 AM – 9:00 PM<br>
+          <span class="ms-3">(Break: 1:00 PM – 2:00 PM)</span>
+        </p>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="mb-1 fw-semibold" style="color: var(--wt-dark);">
+          <i class="bi bi-calendar-week me-1"></i> Weekly Working Hours
+        </p>
+        <p class="mb-0 text-muted small">
+          Based on schedule &nbsp;|&nbsp; 6 working days + 1 rest day/week
+        </p>
+      </div>
+
+      <div class="col-12">
+        <p class="mb-2 fw-semibold" style="color: var(--wt-dark);">
+          <i class="bi bi-cash-coin me-1"></i> Agreed Monthly Salary
+        </p>
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <div class="rounded p-2 text-center" style="background: var(--wt-light);">
+              <div class="fw-bold" style="color: var(--wt-dark);">RM 1,300</div>
+              <div class="text-muted" style="font-size:.75rem;">Basic Salary</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="rounded p-2 text-center" style="background: var(--wt-light);">
+              <div class="fw-bold" style="color: var(--wt-dark);">RM 300</div>
+              <div class="text-muted" style="font-size:.75rem;">Attendance & Performance</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="rounded p-2 text-center" style="background: var(--wt-light);">
+              <div class="fw-bold" style="color: var(--wt-dark);">RM 200</div>
+              <div class="text-muted" style="font-size:.75rem;">Social Media Allowance</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="rounded p-2 text-center" style="background-color: var(--wt-dark);">
+              <div class="fw-bold text-white">RM 1,800</div>
+              <div class="text-white" style="font-size:.75rem; opacity:.85;">Total Potential</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <p class="mb-0 fw-semibold" style="color: var(--wt-dark);">
+          <i class="bi bi-hourglass-split me-1"></i> Overtime Rate:
+          <span class="text-muted fw-normal">RM 11 per hour</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Quick Action Buttons -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
@@ -123,7 +194,7 @@
       <div class="col-6 col-md-3">
         <div class="text-center p-3 rounded" style="background: var(--wt-light);">
           <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
-            {% if sale %}{{ sale.total }} SAR{% else %}—{% endif %}
+            {% if sale %}{{ sale.total }} RM{% else %}—{% endif %}
           </div>
           <div class="text-muted small">Total Sales</div>
         </div>
@@ -133,7 +204,7 @@
       <div class="col-6 col-md-3">
         <div class="text-center p-3 rounded" style="background: var(--wt-light);">
           <div class="fs-5 fw-bold" style="color: var(--wt-dark);">
-            {% if total_expenses %}{{ total_expenses }} SAR{% else %}—{% endif %}
+            {% if total_expenses %}{{ total_expenses }} RM{% else %}—{% endif %}
           </div>
           <div class="text-muted small">Expenses ({{ expenses|length }})</div>
         </div>
