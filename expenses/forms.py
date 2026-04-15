@@ -18,9 +18,5 @@ class ExpenseForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Brief description of the expense',
             }),
-            'receipt_photo': forms.ClearableFileInput(attrs={
-                'class': 'form-control',
-                'accept': 'image/*',
-                'capture': 'environment',
-            }),
+            'receipt_photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }

@@ -51,11 +51,6 @@ def submit_report(request):
                 )
 
             report.save()
-
-            # Save additional Report Generator photos
-            for extra_file in request.FILES.getlist('extra_photos'):
-                ReportPhoto.objects.create(report=report, photo=extra_file)
-
             messages.success(request, 'Daily report submitted successfully. Good work today!')
             return redirect('dashboard:employee')
     else:

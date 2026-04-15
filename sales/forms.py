@@ -16,10 +16,7 @@ class SaleForm(forms.ModelForm):
             'cash_amount':          _num('0.00'),
             'bank_transfer_amount': _num('0.00'),
             'actual_cash':          _num('0.00'),
-            'cashier_photo': forms.ClearableFileInput(attrs={
-                'class': 'form-control',
-                'accept': 'image/*',
-            }),
+            'cashier_photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'notes': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 2,

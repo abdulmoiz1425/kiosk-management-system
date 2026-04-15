@@ -82,15 +82,7 @@
                   <div class="text-danger small mt-1">{{ form.opening_photo.errors.0 }}</div>
                 {% endif %}
               </div>
-              <div id="opening-preview-wrap" class="mb-3 d-none">
-                <img id="opening-preview" src="#" alt="Main Photo Preview" class="img-fluid rounded" style="max-height:180px;">
-              </div>
 
-              <div class="mb-2">
-                <label class="form-label small text-muted mb-1">Additional Photos (optional — select multiple)</label>
-                {{ form.extra_photos }}
-              </div>
-              <div id="extra-preview-wrap" class="d-flex flex-wrap gap-2 mb-1"></div>
             </div>
           </div>
 
@@ -104,9 +96,6 @@
               {% if form.closing_photo.errors %}
                 <div class="text-danger small mt-1">{{ form.closing_photo.errors.0 }}</div>
               {% endif %}
-              <div id="closing-preview-wrap" class="mt-2 d-none">
-                <img id="closing-preview" src="#" alt="Shift Report Preview" class="img-fluid rounded" style="max-height:180px;">
-              </div>
             </div>
           </div>
 
@@ -128,36 +117,7 @@
 
 {% block extra_js %}
 <script>
-function bindPreview(inputId, previewId, wrapId) {
-  document.getElementById(inputId).addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        document.getElementById(previewId).src = ev.target.result;
-        document.getElementById(wrapId).classList.remove('d-none');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-}
-bindPreview('id_opening_photo', 'opening-preview', 'opening-preview-wrap');
-bindPreview('id_closing_photo', 'closing-preview', 'closing-preview-wrap');
-
-// Multiple extra photos preview
-document.getElementById('id_extra_photos').addEventListener('change', function(e) {
-  const wrap = document.getElementById('extra-preview-wrap');
-  wrap.innerHTML = '';
-  Array.from(e.target.files).forEach(function(file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      img.style.cssText = 'height:80px;width:80px;object-fit:cover;border-radius:6px;border:2px solid var(--wt-mint);';
-      wrap.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-});
+initCameraWidget('id_opening_photo');
+initCameraWidget('id_closing_photo');
 </script>
 {% endblock %}

@@ -36,11 +36,6 @@
             <div class="form-text">Take a clear photo of yourself at the kiosk.</div>
           </div>
 
-          <!-- Live camera preview -->
-          <div id="preview-wrap" class="mb-3 d-none">
-            <img id="photo-preview" src="#" alt="Preview" class="img-fluid rounded" style="max-height:250px;">
-          </div>
-
           <div class="mb-4">
             <label class="form-label fw-semibold">Notes (optional)</label>
             {{ form.notes }}
@@ -59,16 +54,6 @@
 
 {% block extra_js %}
 <script>
-document.querySelector('input[type=file]').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      document.getElementById('photo-preview').src = ev.target.result;
-      document.getElementById('preview-wrap').classList.remove('d-none');
-    };
-    reader.readAsDataURL(file);
-  }
-});
+initCameraWidget('id_photo');
 </script>
 {% endblock %}

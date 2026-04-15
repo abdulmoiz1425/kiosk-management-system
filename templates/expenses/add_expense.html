@@ -81,10 +81,6 @@
             <div class="form-text">Optional but recommended.</div>
           </div>
 
-          <div id="preview-wrap" class="mb-3 d-none">
-            <img id="photo-preview" src="#" alt="Receipt Preview" class="img-fluid rounded" style="max-height:200px;">
-          </div>
-
           <button type="submit" class="btn btn-wt-mint w-100 py-2 fs-6">
             <i class="bi bi-plus-circle me-2"></i>Add Expense
           </button>
@@ -129,16 +125,6 @@
 
 {% block extra_js %}
 <script>
-document.querySelector('input[type=file]').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      document.getElementById('photo-preview').src = ev.target.result;
-      document.getElementById('preview-wrap').classList.remove('d-none');
-    };
-    reader.readAsDataURL(file);
-  }
-});
+initCameraWidget('id_receipt_photo');
 </script>
 {% endblock %}

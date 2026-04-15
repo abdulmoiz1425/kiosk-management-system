@@ -4,11 +4,7 @@ from django import forms
 class CheckInForm(forms.Form):
     photo = forms.ImageField(
         label='Check-in Photo',
-        widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control',
-            'accept': 'image/*',
-            'capture': 'environment',
-        })
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
     )
     notes = forms.CharField(
         required=False,
@@ -19,9 +15,5 @@ class CheckInForm(forms.Form):
 class CheckOutForm(forms.Form):
     photo = forms.ImageField(
         label='Check-out Photo',
-        widget=forms.ClearableFileInput(attrs={
-            'class': 'form-control',
-            'accept': 'image/*',
-            'capture': 'environment',
-        })
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
     )

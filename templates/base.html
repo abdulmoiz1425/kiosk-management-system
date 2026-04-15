@@ -205,6 +205,105 @@
 {% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function initCameraWidget(inputId) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+
+  input.style.display = 'none';
+
+  var container = document.createElement('div');
+  container.className = 'camera-widget-container';
+  input.parentNode.insertBefore(container, input.nextSibling);
+
+  // Open Camera button
+  var openBtn = document.createElement('button');
+  openBtn.type = 'button';
+  openBtn.className = 'btn btn-outline-secondary w-100 py-2';
+  openBtn.innerHTML = '<i class="bi bi-camera me-2"></i>Open Camera';
+  container.appendChild(openBtn);
+
+  // Camera section (video + controls)
+  var cameraSection = document.createElement('div');
+  cameraSection.style.display = 'none';
+  cameraSection.innerHTML =
+    '<video id="' + inputId + '_video" autoplay playsinline muted ' +
+    'style="width:100%;max-height:300px;border-radius:8px;background:#000;display:block;"></video>' +
+    '<div class="d-flex gap-2 mt-2">' +
+      '<button type="button" id="' + inputId + '_snap" class="btn btn-wt flex-fill">' +
+        '<i class="bi bi-camera-fill me-1"></i>Take Photo' +
+      '</button>' +
+      '<button type="button" id="' + inputId + '_cancel" class="btn btn-outline-secondary px-3">' +
+        '<i class="bi bi-x-lg"></i>' +
+      '</button>' +
+    '</div>';
+  container.appendChild(cameraSection);
+
+  // Preview section
+  var previewSection = document.createElement('div');
+  previewSection.style.display = 'none';
+  previewSection.innerHTML =
+    '<img id="' + inputId + '_preview" src="#" ' +
+    'style="width:100%;max-height:250px;object-fit:contain;border-radius:8px;display:block;">' +
+    '<button type="button" id="' + inputId + '_retake" class="btn btn-outline-secondary w-100 mt-2">' +
+      '<i class="bi bi-arrow-counterclockwise me-1"></i>Retake' +
+    '</button>';
+  container.appendChild(previewSection);
+
+  var stream = null;
+
+  function openCamera() {
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+    }).then(function(s) {
+      stream = s;
+      document.getElementById(inputId + '_video').srcObject = stream;
+      openBtn.style.display = 'none';
+      previewSection.style.display = 'none';
+      cameraSection.style.display = 'block';
+    }).catch(function() {
+      alert('Camera access denied. Please allow camera permissions in your browser settings.');
+    });
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      stream = null;
+    }
+  }
+
+  openBtn.addEventListener('click', openCamera);
+
+  document.getElementById(inputId + '_snap').addEventListener('click', function() {
+    var video = document.getElementById(inputId + '_video');
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(function(blob) {
+      var file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      document.getElementById(inputId + '_preview').src = URL.createObjectURL(blob);
+      stopCamera();
+      cameraSection.style.display = 'none';
+      previewSection.style.display = 'block';
+    }, 'image/jpeg', 0.92);
+  });
+
+  document.getElementById(inputId + '_cancel').addEventListener('click', function() {
+    stopCamera();
+    cameraSection.style.display = 'none';
+    openBtn.style.display = 'block';
+  });
+
+  document.getElementById(inputId + '_retake').addEventListener('click', openCamera);
+}
+</script>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>
