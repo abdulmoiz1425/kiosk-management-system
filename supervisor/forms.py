@@ -10,10 +10,7 @@ PHOTO_WIDGET  = lambda: forms.ClearableFileInput(attrs={'class': 'form-control f
 class VisitForm(forms.ModelForm):
     def __init__(self, *args, supervisor=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if supervisor is not None:
-            self.fields['kiosk'].queryset = supervisor.assigned_kiosks.filter(is_active=True)
-        else:
-            self.fields['kiosk'].queryset = Kiosk.objects.filter(is_active=True)
+        self.fields['kiosk'].queryset = Kiosk.objects.filter(is_active=True)
 
     class Meta:
         model = SupervisorVisit
@@ -52,12 +49,9 @@ class VisitForm(forms.ModelForm):
 class BonusPenaltyForm(forms.ModelForm):
     def __init__(self, *args, supervisor=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if supervisor is not None:
-            self.fields['employee'].queryset = User.objects.filter(
-                role='employee', kiosk__in=supervisor.assigned_kiosks.all()
-            ).order_by('first_name')
-        else:
-            self.fields['employee'].queryset = User.objects.filter(role='employee').order_by('first_name')
+        self.fields['employee'].queryset = User.objects.filter(
+            role='employee'
+        ).order_by('first_name')
         self.fields['employee'].label_from_instance = lambda u: f"{u.get_full_name() or u.username} — {u.kiosk.name if u.kiosk else 'No kiosk'}"
 
     class Meta:
