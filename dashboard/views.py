@@ -5,6 +5,7 @@ from attendance.models import Attendance
 from sales.models import Sale
 from expenses.models import Expense
 from reports.models import DailyReport
+from supervisor.models import SupervisorVisit, BonusPenalty
 
 
 @login_required
@@ -102,4 +103,20 @@ def employee_history(request):
         'expenses': expenses,
         'reports':  reports,
         'today':    timezone.localdate(),
+    })
+
+
+@login_required
+def my_reviews(request):
+    user = request.user
+    visits = []
+    if user.kiosk:
+        visits = SupervisorVisit.objects.filter(kiosk=user.kiosk).select_related('supervisor').order_by('-date')[:30]
+
+    bonuses_penalties = BonusPenalty.objects.filter(employee=user).select_related('issued_by').order_by('-date')[:30]
+
+    return render(request, 'dashboard/my_reviews.html', {
+        'visits': visits,
+        'bonuses_penalties': bonuses_penalties,
+        'today': timezone.localdate(),
     })

@@ -144,7 +144,7 @@
 </div>
 
 <!-- Submit Report Button -->
-<div class="mb-4">
+<div class="mb-3">
   {% if report %}
   <div class="btn btn-secondary w-100 py-2 opacity-75">
     <i class="bi bi-check-circle-fill me-2"></i>Daily Report Submitted
@@ -154,6 +154,13 @@
     <i class="bi bi-file-earmark-arrow-up me-2"></i>Submit Daily Report
   </a>
   {% endif %}
+</div>
+
+<!-- My Reviews Button -->
+<div class="mb-4">
+  <a href="{% url 'dashboard:my_reviews' %}" class="btn btn-outline-secondary w-100 py-2">
+    <i class="bi bi-star-half me-2"></i>View My Reviews
+  </a>
 </div>
 
 <!-- Today's Summary -->

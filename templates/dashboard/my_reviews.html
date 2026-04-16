@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block title %}My Reviews — Wafaa Tech{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+  <a href="{% url 'dashboard:employee' %}" class="btn btn-sm btn-outline-secondary me-3">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <h4 class="fw-bold mb-0" style="color: var(--wt-dark);">
+    <i class="bi bi-star-half me-2"></i>My Reviews
+  </h4>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-fill mb-4" id="reviewTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-visits">
+      <i class="bi bi-clipboard-check me-1"></i>Supervisor Visits
+      {% if visits %}<span class="badge bg-secondary ms-1">{{ visits|length }}</span>{% endif %}
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-bonus">
+      <i class="bi bi-cash-coin me-1"></i>Bonus / Penalty
+      {% if bonuses_penalties %}<span class="badge bg-secondary ms-1">{{ bonuses_penalties|length }}</span>{% endif %}
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+  <!-- Supervisor Visits Tab -->
+  <div class="tab-pane fade show active" id="tab-visits">
+    {% if visits %}
+      {% for visit in visits %}
+      <div class="card mb-3" style="border-left: 4px solid var(--wt-mint);">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+             style="background-color: var(--wt-dark); color: #fff;">
+          <span>
+            <i class="bi bi-person-badge me-2"></i>
+            <strong>{{ visit.supervisor.get_full_name|default:visit.supervisor.username }}</strong>
+            <span class="opacity-75 ms-2 small">visited on {{ visit.date|date:"d M Y" }}</span>
+          </span>
+          <!-- Overall Rating Stars -->
+          <span>
+            {% for i in "12345" %}
+              {% if forloop.counter <= visit.rating %}
+                <i class="bi bi-star-fill text-warning"></i>
+              {% else %}
+                <i class="bi bi-star text-warning opacity-50"></i>
+              {% endif %}
+            {% endfor %}
+            <span class="ms-1 fw-bold text-warning">{{ visit.rating }}/5</span>
+          </span>
+        </div>
+
+        <div class="card-body">
+
+          <!-- Evaluation Categories Grid -->
+          {% with cats="attendance,cleanliness,device_care,customer_service,marketing" %}
+          <div class="row g-2 mb-3">
+
+            {% if visit.attendance_rating %}
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded text-center" style="background: var(--wt-light);">
+                <div class="small fw-semibold mb-1" style="color: var(--wt-dark);">
+                  <i class="bi bi-person-check me-1"></i>Attendance
+                </div>
+                <div>
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= visit.attendance_rating %}
+                      <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning opacity-50" style="font-size:.8rem;"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                {% if visit.attendance_photo %}
+                <a href="{{ MEDIA_URL }}{{ visit.attendance_photo }}" target="_blank" class="d-block mt-1">
+                  <img src="{{ MEDIA_URL }}{{ visit.attendance_photo }}" alt="Attendance"
+                       style="height:48px;width:100%;object-fit:cover;border-radius:4px;">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if visit.cleanliness_rating %}
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded text-center" style="background: var(--wt-light);">
+                <div class="small fw-semibold mb-1" style="color: var(--wt-dark);">
+                  <i class="bi bi-brush me-1"></i>Cleanliness
+                </div>
+                <div>
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= visit.cleanliness_rating %}
+                      <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning opacity-50" style="font-size:.8rem;"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                {% if visit.cleanliness_photo %}
+                <a href="{{ MEDIA_URL }}{{ visit.cleanliness_photo }}" target="_blank" class="d-block mt-1">
+                  <img src="{{ MEDIA_URL }}{{ visit.cleanliness_photo }}" alt="Cleanliness"
+                       style="height:48px;width:100%;object-fit:cover;border-radius:4px;">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if visit.device_care_rating %}
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded text-center" style="background: var(--wt-light);">
+                <div class="small fw-semibold mb-1" style="color: var(--wt-dark);">
+                  <i class="bi bi-phone me-1"></i>Device Care
+                </div>
+                <div>
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= visit.device_care_rating %}
+                      <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning opacity-50" style="font-size:.8rem;"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                {% if visit.device_care_photo %}
+                <a href="{{ MEDIA_URL }}{{ visit.device_care_photo }}" target="_blank" class="d-block mt-1">
+                  <img src="{{ MEDIA_URL }}{{ visit.device_care_photo }}" alt="Device Care"
+                       style="height:48px;width:100%;object-fit:cover;border-radius:4px;">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if visit.customer_service_rating %}
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded text-center" style="background: var(--wt-light);">
+                <div class="small fw-semibold mb-1" style="color: var(--wt-dark);">
+                  <i class="bi bi-headset me-1"></i>Customer Service
+                </div>
+                <div>
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= visit.customer_service_rating %}
+                      <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning opacity-50" style="font-size:.8rem;"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                {% if visit.customer_service_photo %}
+                <a href="{{ MEDIA_URL }}{{ visit.customer_service_photo }}" target="_blank" class="d-block mt-1">
+                  <img src="{{ MEDIA_URL }}{{ visit.customer_service_photo }}" alt="Customer Service"
+                       style="height:48px;width:100%;object-fit:cover;border-radius:4px;">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if visit.marketing_rating %}
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded text-center" style="background: var(--wt-light);">
+                <div class="small fw-semibold mb-1" style="color: var(--wt-dark);">
+                  <i class="bi bi-megaphone me-1"></i>Marketing
+                </div>
+                <div>
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= visit.marketing_rating %}
+                      <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning opacity-50" style="font-size:.8rem;"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                {% if visit.marketing_photo %}
+                <a href="{{ MEDIA_URL }}{{ visit.marketing_photo }}" target="_blank" class="d-block mt-1">
+                  <img src="{{ MEDIA_URL }}{{ visit.marketing_photo }}" alt="Marketing"
+                       style="height:48px;width:100%;object-fit:cover;border-radius:4px;">
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+          {% endwith %}
+
+          <!-- Notes -->
+          {% if visit.notes %}
+          <div class="p-3 rounded" style="background: #f0faf5; border-left: 3px solid var(--wt-mint);">
+            <p class="mb-0 small">
+              <i class="bi bi-chat-left-text me-2" style="color: var(--wt-dark);"></i>
+              <strong style="color: var(--wt-dark);">Supervisor Notes:</strong><br>
+              <span class="text-muted ms-3">{{ visit.notes }}</span>
+            </p>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="card card-wt">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-clipboard-x fs-1 d-block mb-2 text-muted"></i>
+        <p class="text-muted mb-0">No supervisor visits recorded for your kiosk yet.</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Bonus / Penalty Tab -->
+  <div class="tab-pane fade" id="tab-bonus">
+    {% if bonuses_penalties %}
+    <div class="card card-wt">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-wt">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount (RM)</th>
+                <th>Issued By</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bp in bonuses_penalties %}
+              <tr>
+                <td>{{ bp.date|date:"d M Y" }}</td>
+                <td>
+                  {% if bp.type == 'bonus' %}
+                    <span class="badge bg-success">
+                      <i class="bi bi-arrow-up-circle me-1"></i>Bonus
+                    </span>
+                  {% else %}
+                    <span class="badge bg-danger">
+                      <i class="bi bi-arrow-down-circle me-1"></i>Penalty
+                    </span>
+                  {% endif %}
+                </td>
+                <td>
+                  <strong class="{% if bp.type == 'bonus' %}text-success{% else %}text-danger{% endif %}">
+                    {% if bp.type == 'bonus' %}+{% else %}-{% endif %}{{ bp.amount }}
+                  </strong>
+                </td>
+                <td>{{ bp.issued_by.get_full_name|default:bp.issued_by.username }}</td>
+                <td class="text-muted small">{{ bp.reason }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="card card-wt">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-cash-coin fs-1 d-block mb-2 text-muted"></i>
+        <p class="text-muted mb-0">No bonus or penalty records found.</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -125,6 +125,10 @@
                    href="{% url 'dashboard:history' %}">
                     <i class="bi bi-clock-history"></i> My History
                 </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'my_reviews' %}active{% endif %}"
+                   href="{% url 'dashboard:my_reviews' %}">
+                    <i class="bi bi-star-half"></i> My Reviews
+                </a>
                 {% endif %}
 
                 <!-- Logout at bottom of sidebar -->
@@ -199,6 +203,9 @@
     </a>
     <a href="{% url 'reports:submit' %}" class="{% if request.resolver_match.url_name == 'submit' %}active{% endif %}">
         <i class="bi bi-file-earmark-text"></i><span>Report</span>
+    </a>
+    <a href="{% url 'dashboard:my_reviews' %}" class="{% if request.resolver_match.url_name == 'my_reviews' %}active{% endif %}">
+        <i class="bi bi-star-half"></i><span>Reviews</span>
     </a>
     {% endif %}
 </nav>
