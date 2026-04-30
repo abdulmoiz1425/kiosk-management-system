@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+.git/
+media/
+staticfiles/
+*.DS_Store
